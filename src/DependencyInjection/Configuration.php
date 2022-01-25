@@ -2,6 +2,7 @@
 
 namespace Jgrasp\PrestashopMigrationPlugin\DependencyInjection;
 
+use Jgrasp\PrestashopMigrationPlugin\Repository\EntityRepository;
 use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -26,20 +27,19 @@ class Configuration implements ConfigurationInterface
     public function addResourceSection(NodeBuilder $builder){
         $builder
             ->arrayNode('resources')
-                ->addDefaultsIfNotSet()
                 ->children()
                     ->arrayNode('category')
                         ->addDefaultsIfNotSet()
                         ->children()
                             ->scalarNode('table')->defaultValue('category')->end()
-                            ->scalarNode('repository')->cannotBeEmpty()->defaultNull()->end()
+                            ->scalarNode('repository')->defaultValue(EntityRepository::class)->end()
                         ->end()
                     ->end()
                     ->arrayNode('product')
                         ->addDefaultsIfNotSet()
                         ->children()
                             ->scalarNode('table')->defaultValue('product')->end()
-                            ->scalarNode('repository')->cannotBeEmpty()->defaultNull()->end()
+                            ->scalarNode('repository')->defaultValue(EntityRepository::class)->end()
                         ->end()
                     ->end()
                 ->end()

@@ -20,6 +20,8 @@ final class PrestashopMigrationExtension extends Extension
         $loader->load('services.xml');
 
         $configuration = $this->getConfiguration($configs, $container);
+
+
         $config = $this->processConfiguration($configuration, $configs);
 
         $resources = $config['resources'];
@@ -33,21 +35,15 @@ final class PrestashopMigrationExtension extends Extension
             $repository = $configuration['repository'];
             $table = $configuration['table'];
 
-            $class = EntityRepository::class;
-
-            if (null !== $repository) {
-                $class = $repository;
-
-                if (!class_exists($class)) {
-                    throw new InvalidConfigurationException(sprintf('Class %s for the repository "%s" does not exist.', $class, $resource));
-                }
-
-                if ($class !== EntityRepository::class && !is_subclass_of($class, EntityRepository::class)) {
-                    throw new InvalidConfigurationException(sprintf('Class %s for the repository "%s" is not an instance of %s.', $class, $resource, EntityRepository::class));
-                }
+            if (!class_exists($repository)) {
+                throw new InvalidConfigurationException(sprintf('Class %s for the repository "%s" does not exist.', $repository, $resource));
             }
 
-            $definition = new Definition($class, [$table, $prefix, new Reference('doctrine.dbal.prestashop_connection')]);
+            if ($repository !== EntityRepository::class && !is_subclass_of($repository, EntityRepository::class)) {
+                throw new InvalidConfigurationException(sprintf('Class %s for the repository "%s" is not an instance of %s.', $repository, $resource, EntityRepository::class));
+            }
+
+            $definition = new Definition($repository, [$table, $prefix, new Reference('doctrine.dbal.prestashop_connection')]);
             $definition->setPublic(true);
             $definition->setLazy(true);
 
