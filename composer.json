@@ -1,0 +1,30 @@
+{
+  "name": "jgrasp/sylius-prestashop-migration-plugin",
+  "description": "Migrate Prestashop data into Sylius",
+  "type": "sylius-plugin",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Jgrasp\\PrestashopMigrationPlugin\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Jgrasp\\PrestashopMigrationPlugin\\Tests\\": "tests/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Quentin Briais",
+      "email": "briaisq@hotmail.fr"
+    }
+  ],
+  "require": {
+    "php": "^8.0",
+    "sylius/sylius": "^1.10"
+
+  },
+  "require-dev": {
+
+  }
+}
