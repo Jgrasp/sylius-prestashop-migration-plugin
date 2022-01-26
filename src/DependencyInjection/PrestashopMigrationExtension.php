@@ -20,8 +20,6 @@ final class PrestashopMigrationExtension extends Extension
         $loader->load('services.xml');
 
         $configuration = $this->getConfiguration($configs, $container);
-
-
         $config = $this->processConfiguration($configuration, $configs);
 
         $resources = $config['resources'];
@@ -34,6 +32,7 @@ final class PrestashopMigrationExtension extends Extension
             $definitionId = sprintf('prestashop.repository.%s', $resource);
             $repository = $configuration['repository'];
             $table = $configuration['table'];
+            $primaryKey = $configuration['primary_key'];
 
             if (!class_exists($repository)) {
                 throw new InvalidConfigurationException(sprintf('Class %s for the repository "%s" does not exist.', $repository, $resource));
@@ -43,7 +42,7 @@ final class PrestashopMigrationExtension extends Extension
                 throw new InvalidConfigurationException(sprintf('Class %s for the repository "%s" is not an instance of %s.', $repository, $resource, EntityRepository::class));
             }
 
-            $definition = new Definition($repository, [$table, $prefix, new Reference('doctrine.dbal.prestashop_connection')]);
+            $definition = new Definition($repository, [$table, $prefix, $primaryKey, new Reference('doctrine.dbal.prestashop_connection')]);
             $definition->setPublic(true);
             $definition->setLazy(true);
 

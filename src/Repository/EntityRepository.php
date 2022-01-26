@@ -15,38 +15,50 @@ class EntityRepository
 
     private string $_entity;
 
-    public function __construct(string $_entity, string $_prefix, Connection $connection)
+    private string $_primaryKey;
+
+    public function __construct(string $_entity, string $_prefix, string $_primaryKey, Connection $connection)
     {
         $this->_entity = $_entity;
         $this->_prefix = $_prefix;
+        $this->_primaryKey = $_primaryKey;
         $this->connection = $connection;
     }
 
-    public function findAll(int $limit = null, int $offset = null): array
+    public function findAll(int $limit = 10, int $offset = 0): array
     {
         $query = $this
             ->createQueryBuilder()
             ->select('*')
-            ->from($this->getTable());
+            ->from($this->getTable())
+            ->setMaxResults($limit)
+            ->setFirstResult($offset);
 
-        if (null !== $limit) {
-            $query->setMaxResults($limit);
-        }
-
-        if (null !== $offset) {
-            $query->setFirstResult($offset);
-        }
-
-        return $this->connection->executeQuery($query)->fetchAllAssociative();
+        return $this->fetchAllAssociative($query);
     }
 
-    public function createQueryBuilder(): QueryBuilder
+    protected function createQueryBuilder(): QueryBuilder
     {
         return $this->connection->createQueryBuilder();
     }
 
-    private function getTable()
+    protected function fetchAllAssociative(QueryBuilder $query): array
+    {
+        return $this->connection->executeQuery($query)->fetchAllAssociative();
+    }
+
+    protected function getTable(): string
     {
         return $this->_prefix.$this->_entity;
+    }
+
+    protected function getTableAlias(): string
+    {
+        return $this->getTable();
+    }
+
+    protected function getPrimaryKey(): string
+    {
+        return $this->_primaryKey;
     }
 }
