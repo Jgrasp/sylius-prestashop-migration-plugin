@@ -2,6 +2,10 @@
 
 namespace Jgrasp\PrestashopMigrationPlugin\DependencyInjection;
 
+use Jgrasp\PrestashopMigrationPlugin\Factory\ProductFactory;
+use Jgrasp\PrestashopMigrationPlugin\Factory\TaxonFactory;
+use Jgrasp\PrestashopMigrationPlugin\Model\CategoryModel;
+use Jgrasp\PrestashopMigrationPlugin\Model\ProductModel;
 use Jgrasp\PrestashopMigrationPlugin\Repository\CategoryRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\ProductRepository;
 use Symfony\Component\Config\Definition\Builder\NodeBuilder;
@@ -34,7 +38,9 @@ class Configuration implements ConfigurationInterface
                         ->children()
                             ->scalarNode('table')->defaultValue('category')->end()
                             ->scalarNode('repository')->defaultValue(CategoryRepository::class)->end()
+                            ->scalarNode('model')->defaultValue(CategoryModel::class)->end()
                             ->scalarNode('primary_key')->defaultValue('id_category')->end()
+                            ->scalarNode('sylius')->defaultValue('taxon')->end()
                         ->end()
                     ->end()
                     ->arrayNode('product')
@@ -42,7 +48,9 @@ class Configuration implements ConfigurationInterface
                         ->children()
                             ->scalarNode('table')->defaultValue('product')->end()
                             ->scalarNode('repository')->defaultValue(ProductRepository::class)->end()
+                            ->scalarNode('model')->defaultValue(ProductModel::class)->end()
                             ->scalarNode('primary_key')->defaultValue('id_product')->end()
+                            ->scalarNode('sylius')->defaultValue('product')->end()
                         ->end()
                     ->end()
                 ->end()
