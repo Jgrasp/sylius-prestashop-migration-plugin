@@ -3,10 +3,12 @@
 namespace Jgrasp\PrestashopMigrationPlugin\DependencyInjection;
 
 use Jgrasp\PrestashopMigrationPlugin\Attribute\PropertyAttributeAccessor;
-use Jgrasp\PrestashopMigrationPlugin\DataTransformer\EntityTransformer;
-use Jgrasp\PrestashopMigrationPlugin\Factory\Factory;
-use Jgrasp\PrestashopMigrationPlugin\Mapper\EntityMapper;
+use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Model\EntityToModelTransformer;
+use Jgrasp\PrestashopMigrationPlugin\DataTransformer\PrestashopEntityToSyliusResourceTransformer;
+use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\ModelToResourceTransformer;
+use Jgrasp\PrestashopMigrationPlugin\Model\Mapper\ModelMapper;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
+use Jgrasp\PrestashopMigrationPlugin\Provider\ResourceProvider;
 use Jgrasp\PrestashopMigrationPlugin\Repository\EntityRepository;
 use ReflectionClass;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
@@ -16,7 +18,6 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
-
 
 final class PrestashopMigrationExtension extends Extension
 {
@@ -36,8 +37,8 @@ final class PrestashopMigrationExtension extends Extension
 
         foreach ($resources as $resource => $configuration) {
             $this->createRepositoryDefinition($prefix, $resource, $configuration, $container);
-            $this->createFactoryDefinition($resource, $configuration, $container);
             $this->createMapperDefinition($resource, $configuration, $container);
+            $this->createProviderDefinition($configuration, $container);
             $this->createDataTransformer($configuration, $container);
         }
     }
@@ -64,23 +65,6 @@ final class PrestashopMigrationExtension extends Extension
 
         $definition = new Definition($repository, [$table, $prefix, $primaryKey, new Reference('doctrine.dbal.prestashop_connection')]);
         $definition->setPublic(true);
-        $definition->setLazy(true);
-
-        $container->setDefinition($definitionId, $definition);
-    }
-
-    private function createFactoryDefinition(string $resource, array $configuration, ContainerBuilder $container): void
-    {
-        $definitionId = $this->getDefinitionFactoryId($configuration['sylius']);
-
-        $arguments = [
-            new Reference(sprintf('sylius.factory.%s', $configuration['sylius'])),
-            new Reference(PropertyAttributeAccessor::class)
-        ];
-
-        $definition = new Definition(Factory::class, $arguments);
-        $definition->setPublic(true);
-        $definition->setLazy(true);
 
         $container->setDefinition($definitionId, $definition);
     }
@@ -96,35 +80,82 @@ final class PrestashopMigrationExtension extends Extension
             throw new InvalidConfigurationException(sprintf('Class %s for the "%s" mapper is not an instance of %s.', $model, $resource, ModelInterface::class));
         }
 
-        $definition = new Definition(EntityMapper::class, [$model, new Reference(PropertyAttributeAccessor::class)]);
+        $definition = new Definition(ModelMapper::class, [$model, new Reference(PropertyAttributeAccessor::class)]);
         $definition->setPublic(true);
-        $definition->setLazy(true);
+
+        $container->setDefinition($definitionId, $definition);
+    }
+
+    private function createProviderDefinition(array $configuration, ContainerBuilder $container): void
+    {
+        $entity = $configuration['sylius'];
+
+        $definitionId = $this->getDefinitionProviderId($entity);
+
+        $arguments = [
+            new Reference(sprintf('sylius.repository.%s', $entity)),
+            new Reference(sprintf('sylius.factory.%s', $entity)),
+        ];
+
+        $definition = new Definition(ResourceProvider::class, $arguments);
+        $definition->setPublic(true);
 
         $container->setDefinition($definitionId, $definition);
     }
 
     private function createDataTransformer(array $configuration, ContainerBuilder $container): void
     {
-        $definitionId = $this->getDefinitionId('data_transformer', $configuration['sylius']);
+        $entity = $configuration['sylius'];
 
+        $modelTransformerId = $this->getDefinitionDataTransformerId($entity, 'model');
+        $resourceTransformerId = $this->getDefinitionDataTransformerId($entity, 'resource');
         $mapperId = $this->getDefinitionMapperId($configuration['sylius']);
-        $factoryId = $this->getDefinitionFactoryId($configuration['sylius']);
+        $providerId = $this->getDefinitionProviderId($configuration['sylius']);
 
-        $definition = new Definition(EntityTransformer::class, [new Reference($mapperId), new Reference($factoryId)]);
+        //MODEL
+        $definition = new Definition(EntityToModelTransformer::class, [new Reference($mapperId)]);
+        $definition->setPublic(false);
+
+        $container->setDefinition($modelTransformerId, $definition);
+
+        //RESOURCE
+        $arguments = [
+            new Reference($modelTransformerId),
+            new Reference($providerId),
+            new Reference(PropertyAttributeAccessor::class),
+        ];
+
+        $definition = new Definition(ModelToResourceTransformer::class, $arguments);
+        $definition->setPublic(false);
+
+        $container->setDefinition($resourceTransformerId, $definition);
+
+        //PRESTASHOP
+        $definition = new Definition(PrestashopEntityToSyliusResourceTransformer::class, [new Reference($resourceTransformerId)]);
         $definition->setPublic(true);
-        $definition->setLazy(true);
 
-        $container->setDefinition($definitionId, $definition);
-    }
-
-    private function getDefinitionFactoryId(string $resource): string
-    {
-        return $this->getDefinitionId('factory', $resource);
+        $container->setDefinition( $this->getDefinitionDataTransformerId($entity), $definition);
     }
 
     private function getDefinitionMapperId(string $resource): string
     {
         return $this->getDefinitionId('mapper', $resource);
+    }
+
+    private function getDefinitionProviderId(string $resource): string
+    {
+        return $this->getDefinitionId('provider', $resource);
+    }
+
+    private function getDefinitionDataTransformerId(string $resource, string $type = null): string
+    {
+        $definition = 'data_transformer';
+
+        if (null !== $type) {
+            $definition = sprintf($definition.'.%s', $type);
+        }
+
+        return $this->getDefinitionId($definition, $resource);
     }
 
     private function getDefinitionId(string $definition, string $resource): string

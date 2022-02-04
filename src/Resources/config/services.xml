@@ -12,13 +12,5 @@
 
         <service id="Jgrasp\PrestashopMigrationPlugin\Attribute\PropertyAttributeAccessor"/>
 
-        <service id="prestashop.custom_factory.taxon" class="Jgrasp\PrestashopMigrationPlugin\Factory\TaxonFactory" decorates="prestashop.factory.taxon" decoration-priority="256" public="false">
-            <argument type="service" id="prestashop.custom_factory.taxon.inner" />
-        </service>
-        <service id="prestashop.custom_factory.product" class="Jgrasp\PrestashopMigrationPlugin\Factory\ProductFactory" decorates="prestashop.factory.product" decoration-priority="256" public="false">
-            <argument type="service" id="prestashop.custom_factory.taxon.inner" />
-        </service>
-
-
     </services>
 </container>

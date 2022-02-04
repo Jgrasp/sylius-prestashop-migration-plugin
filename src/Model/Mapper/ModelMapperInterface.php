@@ -1,10 +1,10 @@
 <?php
 
-namespace Jgrasp\PrestashopMigrationPlugin\Mapper;
+namespace Jgrasp\PrestashopMigrationPlugin\Model\Mapper;
 
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
 
-interface MapperInterface
+interface ModelMapperInterface
 {
     public function map(array $data): ModelInterface;
 }

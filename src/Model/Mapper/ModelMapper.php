@@ -1,6 +1,6 @@
 <?php
 
-namespace Jgrasp\PrestashopMigrationPlugin\Mapper;
+namespace Jgrasp\PrestashopMigrationPlugin\Model\Mapper;
 
 use Exception;
 use Jgrasp\PrestashopMigrationPlugin\Attribute\Field;
@@ -8,7 +8,7 @@ use Jgrasp\PrestashopMigrationPlugin\Attribute\PropertyAttributeAccessor;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
 use ReflectionClass;
 
-class EntityMapper implements MapperInterface
+final class ModelMapper implements ModelMapperInterface
 {
     private string $model;
 

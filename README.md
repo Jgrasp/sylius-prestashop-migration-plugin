@@ -14,6 +14,13 @@ doctrine:
                 server_version:
 ```
 
+
+Ajouter PrestashopTrait aux entités :
+
+- Taxon
+- Product
+
+
 Todo : 
 
 A migrer : 

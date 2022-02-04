@@ -6,7 +6,7 @@ use Jgrasp\PrestashopMigrationPlugin\Attribute\Field;
 
 class CategoryModel implements ModelInterface
 {
-    #[Field(source: 'id_category', target: 'id')]
+    #[Field(source: 'id_category', target: 'prestashopId')]
     public int $id;
 
     #[Field(source: 'id_parent')]
@@ -17,4 +17,10 @@ class CategoryModel implements ModelInterface
 
     #[Field(source: 'link_rewrite', target: 'slug')]
     public string $slug;
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
 }

@@ -1,31 +1,40 @@
 <?php
 
-namespace Jgrasp\PrestashopMigrationPlugin\Factory;
+namespace Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource;
 
+
+use InvalidArgumentException;
 use Jgrasp\PrestashopMigrationPlugin\Attribute\Field;
 use Jgrasp\PrestashopMigrationPlugin\Attribute\PropertyAttributeAccessor;
+use Jgrasp\PrestashopMigrationPlugin\DataTransformer\DataTransformerInterface;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
+use Jgrasp\PrestashopMigrationPlugin\Provider\ResourceProviderInterface;
 use ReflectionClass;
 use Sylius\Component\Resource\Model\ResourceInterface;
 
-class Factory implements FactoryInterface
+final class ModelToResourceTransformer implements DataTransformerInterface
 {
-    private \Sylius\Component\Resource\Factory\FactoryInterface $factory;
+    private ResourceProviderInterface $resourceProvider;
 
     private PropertyAttributeAccessor $propertyAttributeAccessor;
+    private DataTransformerInterface $dataTransformer;
 
-    public function __construct(\Sylius\Component\Resource\Factory\FactoryInterface $factory, PropertyAttributeAccessor $propertyAttributeAccessor)
+    public function __construct(DataTransformerInterface $dataTransformer, ResourceProviderInterface $resourceProvider, PropertyAttributeAccessor $propertyAttributeAccessor)
     {
-        $this->factory = $factory;
+        $this->dataTransformer = $dataTransformer;
+        $this->resourceProvider = $resourceProvider;
         $this->propertyAttributeAccessor = $propertyAttributeAccessor;
     }
 
-    public function createNew(ModelInterface $model): ResourceInterface
+    public function transform($data): ResourceInterface
     {
-        /**
-         * @var ResourceInterface $resource;
-         */
-        $resource = $this->factory->createNew();
+        $model = $this->dataTransformer->transform($data);
+
+        if (!$model instanceof ModelInterface) {
+            throw new InvalidArgumentException(sprintf('$model should be an instance of %s.', ModelInterface::class));
+        }
+
+        $resource = $this->resourceProvider->getResource($model);
 
         $reflectionModel = new ReflectionClass($model);
         $properties = $reflectionModel->getProperties();
@@ -48,4 +57,5 @@ class Factory implements FactoryInterface
 
         return $resource;
     }
+
 }

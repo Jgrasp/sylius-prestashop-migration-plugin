@@ -5,7 +5,7 @@ namespace Jgrasp\PrestashopMigrationPlugin\Attribute;
 use ReflectionAttribute;
 use ReflectionProperty;
 
-class PropertyAttributeAccessor
+final class PropertyAttributeAccessor
 {
     public function get(ReflectionProperty $reflectionProperty, string $attributeClass): ?ReflectionAttribute
     {
