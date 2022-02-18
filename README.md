@@ -29,3 +29,27 @@ A migrer :
  - Produits
  - Groupe de clients
  - Clients
+
+
+
+#Ajouter une nouvelle entité à transformer : 
+
+Exemple avec une entité Book
+
+## Créer un model
+
+##Créer un 
+
+##Ajouter la configuration
+
+```
+prestashop_migration:
+    resources:
+        book:
+            table: book
+            repository: App\Prestashop\Repository\Book\BookRepository
+            model: App\Prestashop\Model\Book\BookModel
+            primary_key: id_book
+            sylius: book
+            
+```

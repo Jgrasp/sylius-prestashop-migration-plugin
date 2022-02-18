@@ -7,10 +7,26 @@
     <services>
 
         <service id="Jgrasp\PrestashopMigrationPlugin\Command\PrestashopMigrationCommand">
-            <tag name="console.command" command="test"/>
+            <tag name="console.command" command="prestashop:migrate"/>
+            <argument type="service" id="service_container"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
         </service>
 
         <service id="Jgrasp\PrestashopMigrationPlugin\Attribute\PropertyAttributeAccessor"/>
+
+        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\AdminUser\AdminUserTransformer" decorates="prestashop.data_transformer.resource.admin_user">
+            <argument type="service" id=".inner"/>
+            <argument type="service" id="sylius.security.password_updater"/>
+            <argument type="service" id="sylius.repository.locale"/>
+        </service>
+
+        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Channel\ChannelTransformer" decorates="prestashop.data_transformer.resource.channel">
+            <argument type="service" id=".inner"/>
+        </service>
+
+        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Lang\LangTransformer" decorates="prestashop.data_transformer.resource.locale">
+            <argument type="service" id=".inner"/>
+        </service>
 
         <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Taxon\TaxonTransformer" decorates="prestashop.data_transformer.resource.taxon">
             <argument type="service" id=".inner"/>
