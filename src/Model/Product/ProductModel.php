@@ -7,7 +7,7 @@ use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
 
 class ProductModel implements ModelInterface
 {
-    #[Field(source: 'id_product', target: 'prestashopId')]
+    #[Field(source: 'id_product', target: 'prestashopId', id: true)]
     public int $id;
 
     public function getId(): int

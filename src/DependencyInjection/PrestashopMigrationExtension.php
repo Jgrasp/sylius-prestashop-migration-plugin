@@ -10,6 +10,7 @@ use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelMapper;
 use Jgrasp\PrestashopMigrationPlugin\Provider\ResourceProvider;
 use Jgrasp\PrestashopMigrationPlugin\Repository\EntityRepository;
+use Jgrasp\PrestashopMigrationPlugin\Repository\EntityRepositoryInterface;
 use ReflectionClass;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\FileLocator;
@@ -59,8 +60,8 @@ final class PrestashopMigrationExtension extends Extension
             throw new InvalidConfigurationException(sprintf('Class %s for the repository "%s" does not exist.', $repository, $resource));
         }
 
-        if ($repository !== EntityRepository::class && !is_subclass_of($repository, EntityRepository::class)) {
-            throw new InvalidConfigurationException(sprintf('Class %s for the repository "%s" is not an instance of %s.', $repository, $resource, EntityRepository::class));
+        if (!is_subclass_of($repository, EntityRepositoryInterface::class)) {
+            throw new InvalidConfigurationException(sprintf('Class %s for the repository "%s" is not an instance of %s.', $repository, $resource, EntityRepositoryInterface::class));
         }
 
         $definition = new Definition($repository, [$table, $prefix, $primaryKey, new Reference('doctrine.dbal.prestashop_connection')]);
@@ -95,6 +96,7 @@ final class PrestashopMigrationExtension extends Extension
         $arguments = [
             new Reference(sprintf('sylius.repository.%s', $entity)),
             new Reference(sprintf('sylius.factory.%s', $entity)),
+            new Reference(PropertyAttributeAccessor::class),
         ];
 
         $definition = new Definition(ResourceProvider::class, $arguments);
@@ -138,7 +140,7 @@ final class PrestashopMigrationExtension extends Extension
         $definition = new Definition(PrestashopTransformer::class, $arguments);
         $definition->setPublic(true);
 
-        $container->setDefinition( $this->getDefinitionDataTransformerId($entity), $definition);
+        $container->setDefinition($this->getDefinitionDataTransformerId($entity), $definition);
     }
 
     private function getDefinitionMapperId(string $resource): string

@@ -8,7 +8,7 @@ use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
 
 class EmployeeModel implements ModelInterface
 {
-    #[Field(source: 'id_employee', target: 'prestashopId')]
+    #[Field(source: 'id_employee', target: 'prestashopId', id: true)]
     public int $id;
 
     #[Field(source: 'id_lang')]
@@ -28,10 +28,5 @@ class EmployeeModel implements ModelInterface
 
     #[Field(source: 'active', target: 'enabled')]
     public bool $enabled;
-
-    public function getId(): int
-    {
-        return $this->id;
-    }
 
 }

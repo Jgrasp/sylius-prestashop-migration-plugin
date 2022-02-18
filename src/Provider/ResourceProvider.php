@@ -3,6 +3,8 @@
 namespace Jgrasp\PrestashopMigrationPlugin\Provider;
 
 use Exception;
+use Jgrasp\PrestashopMigrationPlugin\Attribute\Field;
+use Jgrasp\PrestashopMigrationPlugin\Attribute\PropertyAttributeAccessor;
 use Jgrasp\PrestashopMigrationPlugin\Entity\PrestashopTrait;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
 use ReflectionClass;
@@ -16,10 +18,13 @@ final class ResourceProvider implements ResourceProviderInterface
 
     private FactoryInterface $factory;
 
-    public function __construct(RepositoryInterface $repository, FactoryInterface $factory)
+    private PropertyAttributeAccessor $propertyAttributeAccessor;
+
+    public function __construct(RepositoryInterface $repository, FactoryInterface $factory, PropertyAttributeAccessor $propertyAttributeAccessor)
     {
         $this->repository = $repository;
         $this->factory = $factory;
+        $this->propertyAttributeAccessor = $propertyAttributeAccessor;
     }
 
     public function getResource(ModelInterface $model): ResourceInterface
@@ -31,7 +36,28 @@ final class ResourceProvider implements ResourceProviderInterface
             throw new Exception(sprintf("Entity %s should implement an instance of Trait %s", $this->repository->getClassName(), PrestashopTrait::class));
         }
 
-        $resource = $this->repository->findOneBy(['prestashopId' => $model->getId()]);
+        $prestashopId = null;
+        $modelReflection = new ReflectionClass($model);
+        $modelProperties = $modelReflection->getProperties();
+
+        foreach ($modelProperties as $property) {
+            $attribute = $this->propertyAttributeAccessor->get($property, Field::class);
+
+            if (null === $attribute) {
+                continue;
+            }
+
+            $field = $attribute->newInstance();
+
+            if (false === $field->id) {
+                continue;
+            }
+
+            $prestashopId = $property->getValue($model);
+            break;
+        }
+
+        $resource = $this->repository->findOneBy(['prestashopId' => $prestashopId]);
 
         if (!$resource) {
             $resource = $this->factory->createNew();

@@ -11,7 +11,7 @@ use Sylius\Component\Resource\Model\ResourceInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\User\Security\PasswordUpdaterInterface;
 
-class AdminUserTransformer implements ResourceTransformerInterface
+class AdminUserResourceTransformer implements ResourceTransformerInterface
 {
     private ResourceTransformerInterface $transformer;
 

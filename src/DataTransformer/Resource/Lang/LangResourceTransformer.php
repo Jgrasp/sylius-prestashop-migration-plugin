@@ -8,7 +8,7 @@ use Sylius\Component\Core\Formatter\StringInflector;
 use Sylius\Component\Locale\Model\LocaleInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 
-class LangTransformer implements ResourceTransformerInterface
+class LangResourceTransformer implements ResourceTransformerInterface
 {
     private ResourceTransformerInterface $transformer;
 

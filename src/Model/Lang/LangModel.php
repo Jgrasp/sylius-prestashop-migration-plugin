@@ -7,15 +7,10 @@ use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
 
 class LangModel implements ModelInterface
 {
-    #[Field(source: 'id_lang', target: 'prestashopId')]
+    #[Field(source: 'id_lang', target: 'prestashopId', id: true)]
     public int $id;
 
     #[Field(source: 'locale', target: 'code')]
     public string $code;
 
-
-    public function getId(): int
-    {
-        return $this->id;
-    }
 }

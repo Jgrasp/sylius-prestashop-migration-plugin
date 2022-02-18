@@ -3,11 +3,13 @@
 namespace Jgrasp\PrestashopMigrationPlugin\DependencyInjection;
 
 use Jgrasp\PrestashopMigrationPlugin\Model\Category\CategoryModel;
+use Jgrasp\PrestashopMigrationPlugin\Model\Currency\CurrencyModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Employee\EmployeeModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Lang\LangModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Product\ProductModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Shop\ShopModel;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Category\CategoryRepository;
+use Jgrasp\PrestashopMigrationPlugin\Repository\Currency\CurrencyRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\EntityRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Product\ProductRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Shop\ShopRepository;
@@ -44,6 +46,16 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('model')->defaultValue(CategoryModel::class)->end()
                             ->scalarNode('primary_key')->defaultValue('id_category')->end()
                             ->scalarNode('sylius')->defaultValue('taxon')->end()
+                        ->end()
+                    ->end()
+                    ->arrayNode('currency')
+                        ->addDefaultsIfNotSet()
+                        ->children()
+                            ->scalarNode('table')->defaultValue('currency')->end()
+                            ->scalarNode('repository')->defaultValue(CurrencyRepository::class)->end()
+                            ->scalarNode('model')->defaultValue(CurrencyModel::class)->end()
+                            ->scalarNode('primary_key')->defaultValue('id_currency')->end()
+                            ->scalarNode('sylius')->defaultValue('currency')->end()
                         ->end()
                     ->end()
                     ->arrayNode('employee')

@@ -34,6 +34,7 @@ final class PrestashopMigrationCommand extends Command
 
         $repository = $this->container->get('prestashop.repository.lang');
 
+        //LOCALES
         $langs = $repository->findAll();
 
         foreach ($langs as $language) {
@@ -43,6 +44,32 @@ final class PrestashopMigrationCommand extends Command
 
         $this->entityManager->flush();
 
+        //CURRENCY
+        $repository = $this->container->get('prestashop.repository.currency');
+
+        $currencies = $repository->findAll();
+
+        foreach ($currencies as $currency) {
+            $currency = $this->container->get('prestashop.data_transformer.currency')->transform($currency);
+            $this->entityManager->persist($currency);
+        }
+
+        $this->entityManager->flush();
+
+        //CHANNELS
+        $repository = $this->container->get('prestashop.repository.shop');
+
+        $shops = $repository->findAll();
+
+        foreach ($shops as $shop) {
+            $channel = $this->container->get('prestashop.data_transformer.channel')->transform($shop);
+            $this->entityManager->persist($channel);
+        }
+
+        $this->entityManager->flush();
+
+
+        //ADMIN USER
         $employees = $this->container->get('prestashop.repository.employee')->findAll();
 
         foreach ($employees as $employee) {
@@ -51,6 +78,8 @@ final class PrestashopMigrationCommand extends Command
         }
 
         $this->entityManager->flush();
+
+
 
         return Command::SUCCESS;
     }

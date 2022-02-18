@@ -11,9 +11,12 @@ final class Field
 
     public ?string $target;
 
-    public function __construct(string $source, ?string $target = null)
+    public bool $id;
+
+    public function __construct(string $source, ?string $target = null, bool $id = false)
     {
         $this->source = $source;
         $this->target = $target;
+        $this->id = $id;
     }
 }

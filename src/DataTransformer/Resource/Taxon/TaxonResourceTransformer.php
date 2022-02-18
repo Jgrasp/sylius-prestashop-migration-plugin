@@ -9,7 +9,7 @@ use Sylius\Component\Resource\Model\ResourceInterface;
 use Sylius\Component\Taxonomy\Generator\TaxonSlugGeneratorInterface;
 use Sylius\Component\Taxonomy\Repository\TaxonRepositoryInterface;
 
-final class TaxonTransformer implements ResourceTransformerInterface
+final class TaxonResourceTransformer implements ResourceTransformerInterface
 {
     private ResourceTransformerInterface $transformer;
 
