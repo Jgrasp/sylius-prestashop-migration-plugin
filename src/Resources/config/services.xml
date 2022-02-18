@@ -12,5 +12,11 @@
 
         <service id="Jgrasp\PrestashopMigrationPlugin\Attribute\PropertyAttributeAccessor"/>
 
+        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Taxon\TaxonTransformer" decorates="prestashop.data_transformer.resource.taxon">
+            <argument type="service" id=".inner"/>
+            <argument type="service" id="sylius.generator.taxon_slug"/>
+            <argument type="service" id="sylius.repository.taxon"/>
+        </service>
+
     </services>
 </container>

@@ -1,8 +1,9 @@
 <?php
 
-namespace Jgrasp\PrestashopMigrationPlugin\Model;
+namespace Jgrasp\PrestashopMigrationPlugin\Model\Category;
 
 use Jgrasp\PrestashopMigrationPlugin\Attribute\Field;
+use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
 
 class CategoryModel implements ModelInterface
 {
@@ -14,6 +15,9 @@ class CategoryModel implements ModelInterface
 
     #[Field(source: 'name', target: 'name')]
     public string $name;
+
+    #[Field(source: 'description', target: 'description')]
+    public ?string $description;
 
     #[Field(source: 'link_rewrite', target: 'slug')]
     public string $slug;

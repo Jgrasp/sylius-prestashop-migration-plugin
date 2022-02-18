@@ -2,38 +2,27 @@
 
 namespace Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource;
 
-
-use InvalidArgumentException;
 use Jgrasp\PrestashopMigrationPlugin\Attribute\Field;
 use Jgrasp\PrestashopMigrationPlugin\Attribute\PropertyAttributeAccessor;
-use Jgrasp\PrestashopMigrationPlugin\DataTransformer\DataTransformerInterface;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
 use Jgrasp\PrestashopMigrationPlugin\Provider\ResourceProviderInterface;
 use ReflectionClass;
 use Sylius\Component\Resource\Model\ResourceInterface;
 
-final class ModelToResourceTransformer implements DataTransformerInterface
+final class ResourceTransformer implements ResourceTransformerInterface
 {
     private ResourceProviderInterface $resourceProvider;
 
     private PropertyAttributeAccessor $propertyAttributeAccessor;
-    private DataTransformerInterface $dataTransformer;
 
-    public function __construct(DataTransformerInterface $dataTransformer, ResourceProviderInterface $resourceProvider, PropertyAttributeAccessor $propertyAttributeAccessor)
+    public function __construct(ResourceProviderInterface $resourceProvider, PropertyAttributeAccessor $propertyAttributeAccessor)
     {
-        $this->dataTransformer = $dataTransformer;
         $this->resourceProvider = $resourceProvider;
         $this->propertyAttributeAccessor = $propertyAttributeAccessor;
     }
 
-    public function transform($data): ResourceInterface
+    public function transform(ModelInterface $model): ResourceInterface
     {
-        $model = $this->dataTransformer->transform($data);
-
-        if (!$model instanceof ModelInterface) {
-            throw new InvalidArgumentException(sprintf('$model should be an instance of %s.', ModelInterface::class));
-        }
-
         $resource = $this->resourceProvider->getResource($model);
 
         $reflectionModel = new ReflectionClass($model);

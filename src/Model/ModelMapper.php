@@ -1,11 +1,10 @@
 <?php
 
-namespace Jgrasp\PrestashopMigrationPlugin\Model\Mapper;
+namespace Jgrasp\PrestashopMigrationPlugin\Model;
 
 use Exception;
 use Jgrasp\PrestashopMigrationPlugin\Attribute\Field;
 use Jgrasp\PrestashopMigrationPlugin\Attribute\PropertyAttributeAccessor;
-use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
 use ReflectionClass;
 
 final class ModelMapper implements ModelMapperInterface
@@ -34,8 +33,8 @@ final class ModelMapper implements ModelMapperInterface
             if ($attribute) {
                 $field = $attribute->newInstance();
 
-                if (!isset($data[$field->source])) {
-                    throw new Exception(sprintf('Property does not exist. Please verify if "%s" is a valid field in your source data.', $field->name));
+                if (!array_key_exists($field->source,$data)) {
+                    throw new Exception(sprintf('Property does not exist. Please verify if "%s" is a valid field in your source data.', $field->source));
                 }
 
                 $property->setValue($model, $data[$field->source]);

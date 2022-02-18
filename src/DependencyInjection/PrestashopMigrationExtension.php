@@ -3,11 +3,11 @@
 namespace Jgrasp\PrestashopMigrationPlugin\DependencyInjection;
 
 use Jgrasp\PrestashopMigrationPlugin\Attribute\PropertyAttributeAccessor;
-use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Model\EntityToModelTransformer;
-use Jgrasp\PrestashopMigrationPlugin\DataTransformer\PrestashopEntityToSyliusResourceTransformer;
-use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\ModelToResourceTransformer;
-use Jgrasp\PrestashopMigrationPlugin\Model\Mapper\ModelMapper;
+use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Model\ModelTransformer;
+use Jgrasp\PrestashopMigrationPlugin\DataTransformer\PrestashopTransformer;
+use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\ResourceTransformer;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
+use Jgrasp\PrestashopMigrationPlugin\Model\ModelMapper;
 use Jgrasp\PrestashopMigrationPlugin\Provider\ResourceProvider;
 use Jgrasp\PrestashopMigrationPlugin\Repository\EntityRepository;
 use ReflectionClass;
@@ -113,25 +113,29 @@ final class PrestashopMigrationExtension extends Extension
         $providerId = $this->getDefinitionProviderId($configuration['sylius']);
 
         //MODEL
-        $definition = new Definition(EntityToModelTransformer::class, [new Reference($mapperId)]);
+        $definition = new Definition(ModelTransformer::class, [new Reference($mapperId)]);
         $definition->setPublic(false);
 
         $container->setDefinition($modelTransformerId, $definition);
 
         //RESOURCE
         $arguments = [
-            new Reference($modelTransformerId),
             new Reference($providerId),
             new Reference(PropertyAttributeAccessor::class),
         ];
 
-        $definition = new Definition(ModelToResourceTransformer::class, $arguments);
+        $definition = new Definition(ResourceTransformer::class, $arguments);
         $definition->setPublic(false);
 
         $container->setDefinition($resourceTransformerId, $definition);
 
         //PRESTASHOP
-        $definition = new Definition(PrestashopEntityToSyliusResourceTransformer::class, [new Reference($resourceTransformerId)]);
+        $arguments = [
+            new Reference($modelTransformerId),
+            new Reference($resourceTransformerId)
+        ];
+
+        $definition = new Definition(PrestashopTransformer::class, $arguments);
         $definition->setPublic(true);
 
         $container->setDefinition( $this->getDefinitionDataTransformerId($entity), $definition);

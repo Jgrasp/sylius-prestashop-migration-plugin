@@ -1,8 +1,9 @@
 <?php
 
-namespace Jgrasp\PrestashopMigrationPlugin\Model;
+namespace Jgrasp\PrestashopMigrationPlugin\Model\Product;
 
 use Jgrasp\PrestashopMigrationPlugin\Attribute\Field;
+use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
 
 class ProductModel implements ModelInterface
 {

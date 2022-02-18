@@ -2,12 +2,12 @@
 
 namespace Jgrasp\PrestashopMigrationPlugin\DependencyInjection;
 
-use Jgrasp\PrestashopMigrationPlugin\Factory\ProductFactory;
-use Jgrasp\PrestashopMigrationPlugin\Factory\TaxonFactory;
-use Jgrasp\PrestashopMigrationPlugin\Model\CategoryModel;
-use Jgrasp\PrestashopMigrationPlugin\Model\ProductModel;
-use Jgrasp\PrestashopMigrationPlugin\Repository\CategoryRepository;
-use Jgrasp\PrestashopMigrationPlugin\Repository\ProductRepository;
+use Jgrasp\PrestashopMigrationPlugin\Model\Category\CategoryModel;
+use Jgrasp\PrestashopMigrationPlugin\Model\Product\ProductModel;
+use Jgrasp\PrestashopMigrationPlugin\Model\Shop\ShopModel;
+use Jgrasp\PrestashopMigrationPlugin\Repository\Category\CategoryRepository;
+use Jgrasp\PrestashopMigrationPlugin\Repository\Product\ProductRepository;
+use Jgrasp\PrestashopMigrationPlugin\Repository\Shop\ShopRepository;
 use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -51,6 +51,16 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('model')->defaultValue(ProductModel::class)->end()
                             ->scalarNode('primary_key')->defaultValue('id_product')->end()
                             ->scalarNode('sylius')->defaultValue('product')->end()
+                        ->end()
+                    ->end()
+                    ->arrayNode('shop')
+                        ->addDefaultsIfNotSet()
+                        ->children()
+                            ->scalarNode('table')->defaultValue('shop')->end()
+                            ->scalarNode('repository')->defaultValue(ShopRepository::class)->end()
+                            ->scalarNode('model')->defaultValue(ShopModel::class)->end()
+                            ->scalarNode('primary_key')->defaultValue('id_shop')->end()
+                            ->scalarNode('sylius')->defaultValue('channel')->end()
                         ->end()
                     ->end()
                 ->end()
