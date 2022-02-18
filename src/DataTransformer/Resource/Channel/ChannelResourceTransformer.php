@@ -77,6 +77,7 @@ class ChannelResourceTransformer implements ResourceTransformerInterface
         }
 
         $channel->setBaseCurrency($currency);
+        $channel->addCurrency($currency);
 
         return $channel;
     }

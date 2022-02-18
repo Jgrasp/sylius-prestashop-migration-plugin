@@ -7,9 +7,8 @@
     <services>
 
         <service id="Jgrasp\PrestashopMigrationPlugin\Command\PrestashopMigrationCommand">
+            <argument type="service" id="Jgrasp\PrestashopMigrationPlugin\Importer\ResourceImporterCollection"/>
             <tag name="console.command" command="prestashop:migrate"/>
-            <argument type="service" id="service_container"/>
-            <argument type="service" id="doctrine.orm.entity_manager"/>
         </service>
 
         <service id="Jgrasp\PrestashopMigrationPlugin\Attribute\PropertyAttributeAccessor"/>
@@ -39,10 +38,15 @@
             <argument type="service" id=".inner"/>
         </service>
 
-        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Taxon\TaxonResourceTransformer" decorates="prestashop.data_transformer.resource.taxon">
+        <!--<service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Taxon\TaxonResourceTransformer" decorates="prestashop.data_transformer.resource.taxon">
             <argument type="service" id=".inner"/>
             <argument type="service" id="sylius.generator.taxon_slug"/>
             <argument type="service" id="sylius.repository.taxon"/>
+        </service>-->
+
+        <!-- RESOURCE IMPORTER -->
+        <service id="Jgrasp\PrestashopMigrationPlugin\Importer\ResourceImporterCollection" >
+            <argument type="tagged_iterator" tag="prestashop.importer"/>
         </service>
 
     </services>

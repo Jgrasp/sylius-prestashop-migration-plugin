@@ -6,10 +6,10 @@ use Jgrasp\PrestashopMigrationPlugin\Attribute\PropertyAttributeAccessor;
 use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Model\ModelTransformer;
 use Jgrasp\PrestashopMigrationPlugin\DataTransformer\PrestashopTransformer;
 use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\ResourceTransformer;
+use Jgrasp\PrestashopMigrationPlugin\Importer\ResourceImporter;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelMapper;
 use Jgrasp\PrestashopMigrationPlugin\Provider\ResourceProvider;
-use Jgrasp\PrestashopMigrationPlugin\Repository\EntityRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\EntityRepositoryInterface;
 use ReflectionClass;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
@@ -41,6 +41,7 @@ final class PrestashopMigrationExtension extends Extension
             $this->createMapperDefinition($resource, $configuration, $container);
             $this->createProviderDefinition($configuration, $container);
             $this->createDataTransformer($configuration, $container);
+            $this->createResourceImporter($configuration, $container);
         }
     }
 
@@ -141,6 +142,34 @@ final class PrestashopMigrationExtension extends Extension
         $definition->setPublic(true);
 
         $container->setDefinition($this->getDefinitionDataTransformerId($entity), $definition);
+    }
+
+    private function createResourceImporter(array $configuration, ContainerBuilder $container): void
+    {
+        $entity = $configuration['sylius'];
+
+        $arguments = [
+            new Reference($this->getDefinitionRepositoryId($entity)),
+            new Reference($this->getDefinitionDataTransformerId($entity)),
+            new Reference('doctrine.orm.entity_manager')
+        ];
+
+        $definition = new Definition(ResourceImporter::class, $arguments);
+        $definition
+            ->setPublic(false)
+            ->addTag('prestashop.importer', ['priority' => $configuration['priority']]);
+
+        $container->setDefinition($this->getDefinitionImporterId($entity), $definition);
+    }
+
+    private function getDefinitionImporterId(string $resource): string
+    {
+        return $this->getDefinitionId('importer', $resource);
+    }
+
+    private function getDefinitionRepositoryId(string $resource): string
+    {
+        return $this->getDefinitionId('repository', $resource);
     }
 
     private function getDefinitionMapperId(string $resource): string

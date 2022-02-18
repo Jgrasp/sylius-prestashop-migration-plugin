@@ -6,7 +6,7 @@ use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Model\ModelTransformerInter
 use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\ResourceTransformerInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 
-final class PrestashopTransformer
+final class PrestashopTransformer implements TransformerInterface
 {
     private ModelTransformerInterface $modelTransformer;
 
