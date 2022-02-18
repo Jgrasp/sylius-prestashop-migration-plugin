@@ -37,6 +37,17 @@ class EntityRepository implements EntityRepositoryInterface
         return $this->fetchAllAssociative($query);
     }
 
+    public function count(): int
+    {
+        $query = $this
+            ->createQueryBuilder()
+            ->select(sprintf('COUNT(%s)', $this->getPrimaryKey()))
+            ->from($this->getTable());
+
+        return (int)$this->connection->executeQuery($query)->fetchOne();
+
+    }
+
     protected function createQueryBuilder(): QueryBuilder
     {
         return $this->connection->createQueryBuilder();

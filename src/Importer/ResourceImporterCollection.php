@@ -4,6 +4,8 @@ namespace Jgrasp\PrestashopMigrationPlugin\Importer;
 
 class ResourceImporterCollection
 {
+    const STEP = 100;
+
     /**
      * @var ResourceImporterInterface[]
      */
@@ -11,13 +13,34 @@ class ResourceImporterCollection
 
     public function __construct(iterable $importers)
     {
-        $this->importers = $importers;
+        $this->importers = $importers instanceof \Traversable ? iterator_to_array($importers) : $importers;
     }
 
-    public function run(): void
+    public function run(callable $callable = null): void
     {
+        $cursor = 0;
+
         foreach ($this->importers as $importer) {
-            $importer->import(2000, 0);
+            $size = $importer->size();
+
+            for ($i = 0; $i < $size; $i += self::STEP) {
+                $cursor += self::STEP;
+
+                if ($cursor > $size) {
+                    $cursor = $size;
+                }
+
+                if (null !== $callable) {
+                    $callable($cursor, $this);
+                }
+
+                $importer->import(self::STEP, $i);
+            }
         }
+    }
+
+    public function size(): int
+    {
+        return array_sum(array_map(static fn(ResourceImporterInterface $importer) => $importer->size(), $this->importers));
     }
 }

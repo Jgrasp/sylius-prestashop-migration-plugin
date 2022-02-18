@@ -37,4 +37,8 @@ class ResourceImporter implements ResourceImporterInterface
         $this->entityManager->flush();
     }
 
+    public function size(): int
+    {
+        return $this->repository->count();
+    }
 }
