@@ -8,6 +8,8 @@ use Jgrasp\PrestashopMigrationPlugin\Repository\EntityRepositoryInterface;
 
 class ResourceImporter implements ResourceImporterInterface
 {
+    private string $name;
+
     private EntityRepositoryInterface $repository;
 
     private TransformerInterface $transformer;
@@ -15,11 +17,13 @@ class ResourceImporter implements ResourceImporterInterface
     private EntityManagerInterface $entityManager;
 
     public function __construct(
+        string                    $name,
         EntityRepositoryInterface $repository,
         TransformerInterface      $transformer,
         EntityManagerInterface    $entityManager
     )
     {
+        $this->name = $name;
         $this->repository = $repository;
         $this->transformer = $transformer;
         $this->entityManager = $entityManager;
@@ -40,5 +44,10 @@ class ResourceImporter implements ResourceImporterInterface
     public function size(): int
     {
         return $this->repository->count();
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
     }
 }

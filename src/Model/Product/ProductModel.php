@@ -10,9 +10,9 @@ class ProductModel implements ModelInterface
     #[Field(source: 'id_product', target: 'prestashopId', id: true)]
     public int $id;
 
-    public function getId(): int
-    {
-        return $this->id;
-    }
+    #[Field(source: 'reference', target: 'code')]
+    public ?string $code;
 
+    #[Field(source: 'price')]
+    public float $price;
 }

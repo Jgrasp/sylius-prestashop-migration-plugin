@@ -148,7 +148,10 @@ final class PrestashopMigrationExtension extends Extension
     {
         $entity = $configuration['sylius'];
 
+        $definitionId = $this->getDefinitionImporterId($entity);
+
         $arguments = [
+            $definitionId,
             new Reference($this->getDefinitionRepositoryId($entity)),
             new Reference($this->getDefinitionDataTransformerId($entity)),
             new Reference('doctrine.orm.entity_manager')
@@ -159,7 +162,7 @@ final class PrestashopMigrationExtension extends Extension
             ->setPublic(false)
             ->addTag('prestashop.importer', ['priority' => $configuration['priority']]);
 
-        $container->setDefinition($this->getDefinitionImporterId($entity), $definition);
+        $container->setDefinition($definitionId, $definition);
     }
 
     private function getDefinitionImporterId(string $resource): string

@@ -34,7 +34,7 @@ final class ModelMapper implements ModelMapperInterface
                 $field = $attribute->newInstance();
 
                 if (!array_key_exists($field->source,$data)) {
-                    throw new Exception(sprintf('Property does not exist. Please verify if "%s" is a valid field in your source data.', $field->source));
+                    throw new Exception(sprintf('Property does not exist for Model %s. Please verify if "%s" is a valid field in your source data.', get_class($model), $field->source));
                 }
 
                 $property->setValue($model, $data[$field->source]);

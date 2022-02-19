@@ -38,6 +38,10 @@
             <argument type="service" id=".inner"/>
         </service>
 
+      <!--  <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Product\ProductResourceTransformer" decorates="prestashop.data_transformer.resource.product">
+            <argument type="service" id=".inner"/>
+        </service>-->
+
         <!--<service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Taxon\TaxonResourceTransformer" decorates="prestashop.data_transformer.resource.taxon">
             <argument type="service" id=".inner"/>
             <argument type="service" id="sylius.generator.taxon_slug"/>
