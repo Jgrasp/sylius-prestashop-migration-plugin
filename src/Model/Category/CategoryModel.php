@@ -13,6 +13,12 @@ class CategoryModel implements ModelInterface
     #[Field(source: 'id_parent')]
     public int $parent;
 
+    #[Field(source: 'active', target: 'enabled')]
+    public bool $enabled;
+
+    #[Field(source: 'position', target: 'position')]
+    public int $position;
+
     #[Field(source: 'name', target: 'name', translatable: true)]
     public array $name;
 
