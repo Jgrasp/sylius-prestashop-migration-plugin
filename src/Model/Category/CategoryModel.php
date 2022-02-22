@@ -13,14 +13,14 @@ class CategoryModel implements ModelInterface
     #[Field(source: 'id_parent')]
     public int $parent;
 
-    #[Field(source: 'name', target: 'name')]
-    public string $name;
+    #[Field(source: 'name', target: 'name', translatable: true)]
+    public array $name;
 
-    #[Field(source: 'description', target: 'description')]
-    public ?string $description;
+    #[Field(source: 'description', translatable: true)]
+    public array $description;
 
-    #[Field(source: 'link_rewrite', target: 'slug')]
-    public string $slug;
+    #[Field(source: 'link_rewrite', translatable: true)]
+    public array $slug;
 
 
 }

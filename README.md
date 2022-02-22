@@ -1,4 +1,4 @@
-Tuto : 
+Tuto :
 
 Créer une nouvelle connexion doctrine pour Prestashop
 
@@ -14,33 +14,29 @@ doctrine:
                 server_version:
 ```
 
-
 Ajouter PrestashopTrait aux entités :
 
 - Taxon
 - Product
 
+Todo :
 
-Todo : 
+A migrer :
 
-A migrer : 
+- Catégories
+- Produits
+- Groupe de clients
+- Clients
 
- - Catégories
- - Produits
- - Groupe de clients
- - Clients
-
-
-
-#Ajouter une nouvelle entité à transformer : 
+# Ajouter une nouvelle entité à transformer :
 
 Exemple avec une entité Book
 
 ## Créer un model
 
-##Créer un 
+## Créer un
 
-##Ajouter la configuration
+## Ajouter la configuration
 
 ```
 prestashop_migration:
@@ -53,3 +49,6 @@ prestashop_migration:
             sylius: book
             
 ```
+
+ATTENTION : LA LOCALE DE SYLIUS PAR DEFAUT DOIT ÊTRE UNE LOCALE EXISTANTE DANS PRESTASHOP POUR QUE L'IMPORT SE PASSE
+BIEN

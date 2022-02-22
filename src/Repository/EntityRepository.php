@@ -25,22 +25,52 @@ class EntityRepository implements EntityRepositoryInterface
         $this->connection = $connection;
     }
 
-    public function findAll(int $limit = 10, int $offset = 0): array
+    public function find(int $id): array
+    {
+        $query = $this->createQueryBuilder();
+
+        $query
+            ->select('*')
+            ->from($this->getTable())
+            ->where($query->expr()->eq($this->getPrimaryKey(), $id));
+
+        $result = $this->connection->executeQuery($query)->fetchAssociative();
+
+        return false !== $result ? $result : [];
+    }
+
+    public function findTranslations(int $id): array
+    {
+        $query = $this->createQueryBuilder();
+
+        $query
+            ->select('*')
+            ->from($this->getTableTranslation())
+            ->where($query->expr()->eq($this->getPrimaryKey(), $id));
+
+        return $this->connection->executeQuery($query)->fetchAllAssociative();
+    }
+
+    public function findAll(int $limit = null, int $offset = null): array
     {
         $query = $this
             ->createQueryBuilder()
             ->select('*')
-            ->from($this->getTable())
-            ->setMaxResults($limit)
-            ->setFirstResult($offset);
+            ->from($this->getTable());
 
-        return $this->fetchAllAssociative($query);
+        if (null !== $limit && null !== $offset) {
+            $query
+                ->setMaxResults($limit)
+                ->setFirstResult($offset);
+        }
+
+        return $this->connection->executeQuery($query)->fetchAllAssociative();
     }
 
     public function count(): int
     {
-        $query = $this
-            ->createQueryBuilder()
+        $query = $this->createQueryBuilder();
+        $query
             ->select(sprintf('COUNT(%s)', $this->getPrimaryKey()))
             ->from($this->getTable());
 
@@ -48,14 +78,14 @@ class EntityRepository implements EntityRepositoryInterface
 
     }
 
+    public function getPrimaryKey(): string
+    {
+        return $this->_primaryKey;
+    }
+
     protected function createQueryBuilder(): QueryBuilder
     {
         return $this->connection->createQueryBuilder();
-    }
-
-    protected function fetchAllAssociative(QueryBuilder $query): array
-    {
-        return $this->connection->executeQuery($query)->fetchAllAssociative();
     }
 
     protected function getTable(): string
@@ -68,8 +98,13 @@ class EntityRepository implements EntityRepositoryInterface
         return $this->getTable();
     }
 
-    protected function getPrimaryKey(): string
+    protected function getTableTranslation(): string
     {
-        return $this->_primaryKey;
+        return sprintf('%s_%s', $this->getTable(), 'lang');
+    }
+
+    protected function getConnection(): Connection
+    {
+        return $this->connection;
     }
 }

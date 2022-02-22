@@ -3,10 +3,12 @@
 namespace Jgrasp\PrestashopMigrationPlugin\DependencyInjection;
 
 use Jgrasp\PrestashopMigrationPlugin\Attribute\PropertyAttributeAccessor;
+use Jgrasp\PrestashopMigrationPlugin\DataCollector\EntityCollector;
 use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Model\ModelTransformer;
 use Jgrasp\PrestashopMigrationPlugin\DataTransformer\PrestashopTransformer;
 use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\ResourceTransformer;
 use Jgrasp\PrestashopMigrationPlugin\Importer\ResourceImporter;
+use Jgrasp\PrestashopMigrationPlugin\Model\LocaleFetcher;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelMapper;
 use Jgrasp\PrestashopMigrationPlugin\Provider\ResourceProvider;
@@ -38,6 +40,7 @@ final class PrestashopMigrationExtension extends Extension
 
         foreach ($resources as $resource => $configuration) {
             $this->createRepositoryDefinition($prefix, $resource, $configuration, $container);
+            $this->createCollectorDefinition($configuration, $container);
             $this->createMapperDefinition($resource, $configuration, $container);
             $this->createProviderDefinition($configuration, $container);
             $this->createDataTransformer($configuration, $container);
@@ -47,11 +50,11 @@ final class PrestashopMigrationExtension extends Extension
 
     private function createRepositoryDefinition(string $prefix, string $resource, array $configuration, ContainerBuilder $container): void
     {
-        $definitionId = $this->getDefinitionId('repository', $resource);
-
         $repository = $configuration['repository'];
         $table = $configuration['table'];
         $primaryKey = $configuration['primary_key'];
+
+        $definitionId = $this->getDefinitionRepositoryId($table);
 
         if (empty($repository)) {
             throw new InvalidConfigurationException(sprintf('You should defined a class for the repository %s.', $resource));
@@ -71,6 +74,19 @@ final class PrestashopMigrationExtension extends Extension
         $container->setDefinition($definitionId, $definition);
     }
 
+    private function createCollectorDefinition(array $configuration, ContainerBuilder $container): void
+    {
+        $table = $configuration['table'];
+        $translatable = $configuration['use_translation'] ?? false;
+
+        $definitionId = $this->getDefinitionCollectorId($table);
+
+        $definition = new Definition(EntityCollector::class, [$translatable, new Reference($this->getDefinitionRepositoryId($table))]);
+        $definition->setPublic(true);
+
+        $container->setDefinition($definitionId, $definition);
+    }
+
     private function createMapperDefinition(string $resource, array $configuration, ContainerBuilder $container): void
     {
         $definitionId = $this->getDefinitionMapperId($configuration['sylius']);
@@ -82,7 +98,7 @@ final class PrestashopMigrationExtension extends Extension
             throw new InvalidConfigurationException(sprintf('Class %s for the "%s" mapper is not an instance of %s.', $model, $resource, ModelInterface::class));
         }
 
-        $definition = new Definition(ModelMapper::class, [$model, new Reference(PropertyAttributeAccessor::class)]);
+        $definition = new Definition(ModelMapper::class, [$model, new Reference(PropertyAttributeAccessor::class), new Reference(LocaleFetcher::class)]);
         $definition->setPublic(true);
 
         $container->setDefinition($definitionId, $definition);
@@ -109,11 +125,12 @@ final class PrestashopMigrationExtension extends Extension
     private function createDataTransformer(array $configuration, ContainerBuilder $container): void
     {
         $entity = $configuration['sylius'];
+        $table = $configuration['table'];
 
-        $modelTransformerId = $this->getDefinitionDataTransformerId($entity, 'model');
+        $modelTransformerId = $this->getDefinitionDataTransformerId($table, 'model');
         $resourceTransformerId = $this->getDefinitionDataTransformerId($entity, 'resource');
-        $mapperId = $this->getDefinitionMapperId($configuration['sylius']);
-        $providerId = $this->getDefinitionProviderId($configuration['sylius']);
+        $mapperId = $this->getDefinitionMapperId($entity);
+        $providerId = $this->getDefinitionProviderId($entity);
 
         //MODEL
         $definition = new Definition(ModelTransformer::class, [new Reference($mapperId)]);
@@ -147,12 +164,13 @@ final class PrestashopMigrationExtension extends Extension
     private function createResourceImporter(array $configuration, ContainerBuilder $container): void
     {
         $entity = $configuration['sylius'];
+        $table = $configuration['table'];
 
         $definitionId = $this->getDefinitionImporterId($entity);
 
         $arguments = [
             $definitionId,
-            new Reference($this->getDefinitionRepositoryId($entity)),
+            new Reference($this->getDefinitionCollectorId($table)),
             new Reference($this->getDefinitionDataTransformerId($entity)),
             new Reference('doctrine.orm.entity_manager')
         ];
@@ -173,6 +191,11 @@ final class PrestashopMigrationExtension extends Extension
     private function getDefinitionRepositoryId(string $resource): string
     {
         return $this->getDefinitionId('repository', $resource);
+    }
+
+    private function getDefinitionCollectorId(string $resource): string
+    {
+        return $this->getDefinitionId('collector', $resource);
     }
 
     private function getDefinitionMapperId(string $resource): string

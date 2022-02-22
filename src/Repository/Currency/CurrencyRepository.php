@@ -14,7 +14,7 @@ class CurrencyRepository extends EntityRepository
             ->from($this->getTableShop())
             ->where('id_shop='.$shopId);
 
-        return $this->fetchAllAssociative($query);
+        return $this->getConnection()->fetchAllAssociative($query);
     }
 
     protected function getTableShop(): string

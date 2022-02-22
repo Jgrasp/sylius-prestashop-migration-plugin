@@ -3,14 +3,14 @@
 namespace Jgrasp\PrestashopMigrationPlugin\Importer;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Jgrasp\PrestashopMigrationPlugin\DataCollector\DataCollectorInterface;
 use Jgrasp\PrestashopMigrationPlugin\DataTransformer\TransformerInterface;
-use Jgrasp\PrestashopMigrationPlugin\Repository\EntityRepositoryInterface;
 
 class ResourceImporter implements ResourceImporterInterface
 {
     private string $name;
 
-    private EntityRepositoryInterface $repository;
+    private DataCollectorInterface $collector;
 
     private TransformerInterface $transformer;
 
@@ -18,20 +18,20 @@ class ResourceImporter implements ResourceImporterInterface
 
     public function __construct(
         string                    $name,
-        EntityRepositoryInterface $repository,
+        DataCollectorInterface $collector,
         TransformerInterface      $transformer,
         EntityManagerInterface    $entityManager
     )
     {
         $this->name = $name;
-        $this->repository = $repository;
+        $this->collector = $collector;
         $this->transformer = $transformer;
         $this->entityManager = $entityManager;
     }
 
     public function import(int $limit, int $offset): void
     {
-        $data = $this->repository->findAll($limit, $offset);
+        $data = $this->collector->collect($limit, $offset);
 
         foreach ($data as $row) {
             $entity = $this->transformer->transform($row);
@@ -43,7 +43,7 @@ class ResourceImporter implements ResourceImporterInterface
 
     public function size(): int
     {
-        return $this->repository->count();
+        return $this->collector->size();
     }
 
     public function getName(): string

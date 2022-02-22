@@ -13,12 +13,21 @@
 
         <service id="Jgrasp\PrestashopMigrationPlugin\Attribute\PropertyAttributeAccessor"/>
 
+        <service id="Jgrasp\PrestashopMigrationPlugin\Model\LocaleFetcher">
+            <argument type="service" id="prestashop.repository.lang"/>
+            <argument type="service" id="sylius.repository.locale"/>
+        </service>
+
         <!-- MODEL TRANSFORMER -->
-        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Model\Channel\ChannelModelTransformer" decorates="prestashop.data_transformer.model.channel">
+        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Model\Channel\ChannelModelTransformer" decorates="prestashop.data_transformer.model.shop">
             <argument type="service" id=".inner"/>
             <argument type="service" id="prestashop.repository.currency"/>
         </service>
 
+        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Model\Category\CategoryModelTransformer" decorates="prestashop.data_transformer.model.category">
+            <argument type="service" id=".inner"/>
+            <argument type="service" id="prestashop.repository.category"/>
+        </service>
 
         <!-- RESOURCE TRANSFORMER -->
         <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\AdminUser\AdminUserResourceTransformer" decorates="prestashop.data_transformer.resource.admin_user">
@@ -38,15 +47,17 @@
             <argument type="service" id=".inner"/>
         </service>
 
-      <!--  <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Product\ProductResourceTransformer" decorates="prestashop.data_transformer.resource.product">
+        <!--<service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Product\ProductResourceTransformer" decorates="prestashop.data_transformer.resource.product">
             <argument type="service" id=".inner"/>
         </service>-->
 
-        <!--<service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Taxon\TaxonResourceTransformer" decorates="prestashop.data_transformer.resource.taxon">
+        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Taxon\TaxonResourceTransformer" decorates="prestashop.data_transformer.resource.taxon">
             <argument type="service" id=".inner"/>
+            <argument type="service" id="sylius.factory.taxon_translation"/>
             <argument type="service" id="sylius.generator.taxon_slug"/>
             <argument type="service" id="sylius.repository.taxon"/>
-        </service>-->
+            <argument type="service" id="Jgrasp\PrestashopMigrationPlugin\Model\LocaleFetcher"/>
+        </service>
 
         <!-- RESOURCE IMPORTER -->
         <service id="Jgrasp\PrestashopMigrationPlugin\Importer\ResourceImporterCollection" >

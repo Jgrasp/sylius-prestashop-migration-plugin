@@ -93,17 +93,18 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('priority')->defaultValue(50)->end()
                         ->end()
                     ->end()*/
-                    /*->arrayNode('taxon')
+                    ->arrayNode('taxon')
                         ->addDefaultsIfNotSet()
                         ->children()
                             ->scalarNode('table')->defaultValue('category')->end()
-                            ->scalarNode('repository')->defaultValue(CategoryRepository::class)->end()
+                            ->scalarNode('repository')->defaultValue(EntityRepository::class)->end()
                             ->scalarNode('model')->defaultValue(CategoryModel::class)->end()
                             ->scalarNode('primary_key')->defaultValue('id_category')->end()
+                            ->scalarNode('use_translation')->defaultValue(true)->end()
                             ->scalarNode('sylius')->defaultValue('taxon')->end()
                             ->scalarNode('priority')->defaultValue(50)->end()
                         ->end()
-                    ->end()*/
+                    ->end()
                 ->end()
             ->end();
         }

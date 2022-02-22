@@ -8,6 +8,20 @@ abstract class TranslatableEntityRepository extends EntityRepository
 {
     const LANGUAGE_IDENTIFIER = 'id_lang';
 
+    public function find(int $prestashopId): array
+    {
+        $query = $this
+            ->createQueryBuilder()
+            ->select('*')
+            ->from($this->getTable());
+
+        $query = $this->applyTranslatableTable($query);
+
+        $query->where($this->getTableAlias().'.'.$this->getPrimaryKey().'='.$prestashopId);
+
+        return $this->fetchAllAssociative($query);
+    }
+
     public function findByLangId(int $langId, int $limit = 10, int $offset = 0)
     {
         $query = $this
@@ -35,9 +49,9 @@ abstract class TranslatableEntityRepository extends EntityRepository
         return $this->getTableLang();
     }
 
-    private function applyTranslatableTable(QueryBuilder $query, int $langId): QueryBuilder
+    private function applyTranslatableTable(QueryBuilder $query): QueryBuilder
     {
-        $conditions = [$this->getLangCondition($langId), $this->getTableCondition()];
+        $conditions = [$this->getTableCondition()];
 
         return $query
             ->join($this->getTable(), $this->getTableLang(), $this->getTableLangAlias(), implode(' AND ', $conditions));

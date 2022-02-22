@@ -13,10 +13,13 @@ final class Field
 
     public bool $id;
 
-    public function __construct(string $source, ?string $target = null, bool $id = false)
+    public bool $translatable;
+
+    public function __construct(string $source, ?string $target = null, bool $id = false, bool $translatable = false)
     {
         $this->source = $source;
         $this->target = $target;
         $this->id = $id;
+        $this->translatable = $translatable;
     }
 }
