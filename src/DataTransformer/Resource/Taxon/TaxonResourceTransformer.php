@@ -17,8 +17,6 @@ final class TaxonResourceTransformer implements ResourceTransformerInterface
 {
     private ResourceTransformerInterface $transformer;
 
-    private FactoryInterface $taxonTranslationFactory;
-
     private TaxonSlugGeneratorInterface $taxonSlugGenerator;
 
     private TaxonRepositoryInterface $taxonRepository;
@@ -27,14 +25,12 @@ final class TaxonResourceTransformer implements ResourceTransformerInterface
 
     public function __construct(
         ResourceTransformerInterface $transformer,
-        FactoryInterface             $taxonTranslationFactory,
         TaxonSlugGeneratorInterface  $taxonSlugGenerator,
         TaxonRepositoryInterface     $taxonRepository,
         LocaleFetcher                $localeFetcher
     )
     {
         $this->transformer = $transformer;
-        $this->taxonTranslationFactory = $taxonTranslationFactory;
         $this->taxonSlugGenerator = $taxonSlugGenerator;
         $this->taxonRepository = $taxonRepository;
         $this->localeFetcher = $localeFetcher;
@@ -65,7 +61,6 @@ final class TaxonResourceTransformer implements ResourceTransformerInterface
             $slug = $this->taxonSlugGenerator->generate($taxon);
             $taxon->setName($name);
 
-            $taxon->setDescription($model->description[$locale->getCode()]);
             $taxon->setSlug($slug);
         }
 
