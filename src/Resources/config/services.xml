@@ -34,6 +34,12 @@
             <tag name="console.command" command="prestashop:migrate:images"/>
         </service>
 
+        <!-- COLLECTOR -->
+        <service id="Jgrasp\PrestashopMigrationPlugin\DataCollector\Customer\CustomerCollector"
+                 decorates="prestashop.collector.customer">
+            <argument type="service" id="prestashop.repository.customer"/>
+        </service>
+
         <!-- MODEL TRANSFORMER -->
         <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Model\Channel\ChannelModelTransformer"
                  decorates="prestashop.data_transformer.model.shop">
@@ -79,6 +85,12 @@
             <argument type="service" id="sylius.product_variant_resolver.default"/>
             <argument type="service" id="sylius.generator.slug"/>
             <argument type="service" id="Jgrasp\PrestashopMigrationPlugin\Model\LocaleFetcher"/>
+        </service>
+
+        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\User\ShopUserResourceTransformer"
+                 decorates="prestashop.data_transformer.resource.customer">
+            <argument type="service" id=".inner"/>
+            <argument type="service" id="sylius.factory.shop_user"/>
         </service>
 
         <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Taxon\TaxonResourceTransformer"

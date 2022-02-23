@@ -23,10 +23,14 @@ Todo :
 
 A migrer :
 
-- Catégories
-- Produits
 - Groupe de clients
 - Clients
+
+A implémenter : 
+
+- Pour l'import des images, il faut prendre en compte les BDD très grandes et faire des flush réguliers.
+- Améliorer le script d'import des images
+
 
 # Ajouter une nouvelle entité à transformer :
 
@@ -52,3 +56,4 @@ prestashop_migration:
 
 ATTENTION : LA LOCALE DE SYLIUS PAR DEFAUT DOIT ÊTRE UNE LOCALE EXISTANTE DANS PRESTASHOP POUR QUE L'IMPORT SE PASSE
 BIEN
+

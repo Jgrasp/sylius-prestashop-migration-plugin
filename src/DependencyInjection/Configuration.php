@@ -4,12 +4,14 @@ namespace Jgrasp\PrestashopMigrationPlugin\DependencyInjection;
 
 use Jgrasp\PrestashopMigrationPlugin\Model\Category\CategoryModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Currency\CurrencyModel;
+use Jgrasp\PrestashopMigrationPlugin\Model\Customer\CustomerModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Employee\EmployeeModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Lang\LangModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Product\ProductModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Shop\ShopModel;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Category\CategoryRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Currency\CurrencyRepository;
+use Jgrasp\PrestashopMigrationPlugin\Repository\Customer\CustomerRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\EntityRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Product\ProductRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Shop\ShopRepository;
@@ -60,6 +62,17 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('primary_key')->defaultValue('id_currency')->end()
                             ->scalarNode('sylius')->defaultValue('currency')->end()
                             ->scalarNode('priority')->defaultValue(250)->end()
+                        ->end()
+                    ->end()
+                    ->arrayNode('customer')
+                        ->addDefaultsIfNotSet()
+                        ->children()
+                            ->scalarNode('table')->defaultValue('customer')->end()
+                            ->scalarNode('repository')->defaultValue(CustomerRepository::class)->end()
+                            ->scalarNode('model')->defaultValue(CustomerModel::class)->end()
+                            ->scalarNode('primary_key')->defaultValue('id_customer')->end()
+                            ->scalarNode('sylius')->defaultValue('customer')->end()
+                            ->scalarNode('priority')->defaultValue(240)->end()
                         ->end()
                     ->end()
                     ->arrayNode('admin_user')

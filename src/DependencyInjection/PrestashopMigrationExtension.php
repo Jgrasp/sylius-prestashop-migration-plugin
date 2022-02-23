@@ -4,6 +4,7 @@ namespace Jgrasp\PrestashopMigrationPlugin\DependencyInjection;
 
 use Jgrasp\PrestashopMigrationPlugin\Attribute\PropertyAttributeAccessor;
 use Jgrasp\PrestashopMigrationPlugin\DataCollector\EntityCollector;
+use Jgrasp\PrestashopMigrationPlugin\DataCollector\EntityTranslatableCollector;
 use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Model\ModelTransformer;
 use Jgrasp\PrestashopMigrationPlugin\DataTransformer\PrestashopTransformer;
 use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\ResourceTransformer;
@@ -88,8 +89,14 @@ final class PrestashopMigrationExtension extends Extension
 
         $definitionId = $this->getDefinitionCollectorId($table);
 
-        $definition = new Definition(EntityCollector::class, [$translatable, new Reference($this->getDefinitionRepositoryId($table))]);
+        $definition = new Definition(EntityCollector::class, [new Reference($this->getDefinitionRepositoryId($table))]);
         $definition->setPublic(true);
+
+        //Create decorator if entity is translatable
+        if ($translatable) {
+            $definition = new Definition(EntityTranslatableCollector::class, [$definition, new Reference($this->getDefinitionRepositoryId($table))]);
+            $definition->setPublic(true);
+        }
 
         $container->setDefinition($definitionId, $definition);
     }
