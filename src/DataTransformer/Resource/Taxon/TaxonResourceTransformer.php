@@ -5,6 +5,7 @@ namespace Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Taxon;
 
 use App\Entity\Taxonomy\Taxon;
 use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\ResourceTransformerInterface;
+use Jgrasp\PrestashopMigrationPlugin\Model\Category\CategoryModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\LocaleFetcher;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
 use Sylius\Component\Core\Formatter\StringInflector;
@@ -70,9 +71,14 @@ final class TaxonResourceTransformer implements ResourceTransformerInterface
         return $taxon;
     }
 
+    /**
+     * @param TaxonInterface $taxon
+     * @param CategoryModel $model
+     *
+     * @return void
+     */
     private function addParent(TaxonInterface $taxon, ModelInterface $model): void
     {
-
         $parent = $this->taxonRepository->findOneBy(['prestashopId' => $model->parent]);
 
         if (null === $parent) {
