@@ -15,7 +15,6 @@ final class PrestashopMigrationCommand extends Command
 {
     private ResourceImporterCollection $resourceImporterCollection;
 
-
     public function __construct(ResourceImporterCollection $resourceImporterCollection)
     {
         parent::__construct();

@@ -10,7 +10,7 @@ trait PrestashopTrait
     /**
      * @ORM\Column(name="prestashop_id", type="integer", nullable=true)
      */
-    protected ?int $prestashopId;
+    protected ?int $prestashopId = null;
 
     /**
      * @ORM\Column(name="prestashop_created_at", type="datetime", nullable=true)

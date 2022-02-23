@@ -103,6 +103,16 @@ class EntityRepository implements EntityRepositoryInterface
         return sprintf('%s_%s', $this->getTable(), 'lang');
     }
 
+    protected function getTableChannel(): string
+    {
+        return sprintf('%s_%s', $this->getTable(), 'shop');
+    }
+
+    protected function getPrefix(): string
+    {
+        return $this->_prefix;
+    }
+
     protected function getConnection(): Connection
     {
         return $this->connection;

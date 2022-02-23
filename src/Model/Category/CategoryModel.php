@@ -4,9 +4,12 @@ namespace Jgrasp\PrestashopMigrationPlugin\Model\Category;
 
 use Jgrasp\PrestashopMigrationPlugin\Attribute\Field;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
+use Jgrasp\PrestashopMigrationPlugin\Model\UrlModelTrait;
 
 class CategoryModel implements ModelInterface
 {
+    use UrlModelTrait;
+
     #[Field(source: 'id_category', target: 'prestashopId', id: true)]
     public int $id;
 
@@ -24,9 +27,5 @@ class CategoryModel implements ModelInterface
 
     #[Field(source: 'description', translatable: true)]
     public array $description;
-
-    #[Field(source: 'link_rewrite', translatable: true)]
-    public array $slug;
-
 
 }

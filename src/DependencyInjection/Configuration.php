@@ -27,7 +27,9 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->scalarNode('connection')->defaultValue("")->info('Doctrine connection name')->cannotBeEmpty()->end()
-            ->scalarNode('prefix')->defaultValue('ps_')->info('Table prefix for database')->cannotBeEmpty()->end();
+            ->scalarNode('prefix')->defaultValue('ps_')->info('Table prefix for database')->cannotBeEmpty()->end()
+            ->scalarNode('public_directory')->defaultNull()->info('The public directory where the product images are stored (ex : "https://www.example.com/img/p/")')->cannotBeEmpty()->end()
+            ->scalarNode('tmp_directory')->defaultValue('/tmp/prestashop')->info('The temporary directory where the product images will be downloaded.')->cannotBeEmpty()->end();
 
         $this->addResourceSection($rootNode);
 
@@ -82,17 +84,18 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('priority')->defaultValue(255)->end()
                         ->end()
                     ->end()
-                   /* ->arrayNode('product')
+                    ->arrayNode('product')
                         ->addDefaultsIfNotSet()
                         ->children()
                             ->scalarNode('table')->defaultValue('product')->end()
                             ->scalarNode('repository')->defaultValue(ProductRepository::class)->end()
                             ->scalarNode('model')->defaultValue(ProductModel::class)->end()
                             ->scalarNode('primary_key')->defaultValue('id_product')->end()
+                            ->scalarNode('use_translation')->defaultValue(true)->end()
                             ->scalarNode('sylius')->defaultValue('product')->end()
-                            ->scalarNode('priority')->defaultValue(50)->end()
+                            ->scalarNode('priority')->defaultValue(40)->end()
                         ->end()
-                    ->end()*/
+                    ->end()
                     ->arrayNode('taxon')
                         ->addDefaultsIfNotSet()
                         ->children()

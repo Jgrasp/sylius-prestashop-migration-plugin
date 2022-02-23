@@ -6,52 +6,83 @@
 
     <services>
 
-        <service id="Jgrasp\PrestashopMigrationPlugin\Command\PrestashopMigrationCommand">
-            <argument type="service" id="Jgrasp\PrestashopMigrationPlugin\Importer\ResourceImporterCollection"/>
-            <tag name="console.command" command="prestashop:migrate"/>
-        </service>
-
         <service id="Jgrasp\PrestashopMigrationPlugin\Attribute\PropertyAttributeAccessor"/>
+
+        <service id="Jgrasp\PrestashopMigrationPlugin\Downloader\ImageDownloader">
+            <argument>%prestashop.public_directory%</argument>
+            <argument>%prestashop.tmp_directory%</argument>
+        </service>
 
         <service id="Jgrasp\PrestashopMigrationPlugin\Model\LocaleFetcher">
             <argument type="service" id="prestashop.repository.lang"/>
             <argument type="service" id="sylius.repository.locale"/>
         </service>
 
+        <!-- COMMAND -->
+        <service id="Jgrasp\PrestashopMigrationPlugin\Command\PrestashopMigrationCommand">
+            <argument type="service" id="Jgrasp\PrestashopMigrationPlugin\Importer\ResourceImporterCollection"/>
+            <tag name="console.command" command="prestashop:migrate"/>
+        </service>
+
+        <service id="Jgrasp\PrestashopMigrationPlugin\Command\PrestashopMigrationImageCommand">
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="sylius.repository.product"/>
+            <argument type="service" id="prestashop.repository.product"/>
+            <argument type="service" id="Jgrasp\PrestashopMigrationPlugin\Downloader\ImageDownloader"/>
+            <argument type="service" id="sylius.factory.product_image"/>
+            <argument type="service" id="sylius.image_uploader"/>
+            <tag name="console.command" command="prestashop:migrate:images"/>
+        </service>
+
         <!-- MODEL TRANSFORMER -->
-        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Model\Channel\ChannelModelTransformer" decorates="prestashop.data_transformer.model.shop">
+        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Model\Channel\ChannelModelTransformer"
+                 decorates="prestashop.data_transformer.model.shop">
             <argument type="service" id=".inner"/>
             <argument type="service" id="prestashop.repository.currency"/>
         </service>
 
-        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Model\Category\CategoryModelTransformer" decorates="prestashop.data_transformer.model.category">
+        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Model\Category\CategoryModelTransformer"
+                 decorates="prestashop.data_transformer.model.category">
             <argument type="service" id=".inner"/>
             <argument type="service" id="prestashop.repository.category"/>
         </service>
 
         <!-- RESOURCE TRANSFORMER -->
-        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\AdminUser\AdminUserResourceTransformer" decorates="prestashop.data_transformer.resource.admin_user">
+        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\AdminUser\AdminUserResourceTransformer"
+                 decorates="prestashop.data_transformer.resource.admin_user">
             <argument type="service" id=".inner"/>
             <argument type="service" id="sylius.security.password_updater"/>
             <argument type="service" id="sylius.repository.locale"/>
         </service>
 
-        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Channel\ChannelResourceTransformer" decorates="prestashop.data_transformer.resource.channel">
+        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Channel\ChannelResourceTransformer"
+                 decorates="prestashop.data_transformer.resource.channel">
             <argument type="service" id=".inner"/>
             <argument type="service" id="sylius.repository.locale"/>
             <argument type="service" id="sylius.repository.currency"/>
             <argument type="service" id="parameter_bag"/>
         </service>
 
-        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Lang\LangResourceTransformer" decorates="prestashop.data_transformer.resource.locale">
+        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Lang\LangResourceTransformer"
+                 decorates="prestashop.data_transformer.resource.locale">
             <argument type="service" id=".inner"/>
         </service>
 
-        <!--<service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Product\ProductResourceTransformer" decorates="prestashop.data_transformer.resource.product">
+        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Product\ProductResourceTransformer"
+                 decorates="prestashop.data_transformer.resource.product">
             <argument type="service" id=".inner"/>
-        </service>-->
+            <argument type="service" id="prestashop.repository.product"/>
+            <argument type="service" id="sylius.repository.taxon"/>
+            <argument type="service" id="sylius.repository.channel"/>
+            <argument type="service" id="sylius.factory.product_taxon"/>
+            <argument type="service" id="sylius.factory.channel_pricing"/>
+            <argument type="service" id="sylius.product_variant_resolver.default"/>
+            <argument type="service" id="sylius.generator.slug"/>
+            <argument type="service" id="Jgrasp\PrestashopMigrationPlugin\Model\LocaleFetcher"/>
+        </service>
 
-        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Taxon\TaxonResourceTransformer" decorates="prestashop.data_transformer.resource.taxon">
+        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Taxon\TaxonResourceTransformer"
+                 decorates="prestashop.data_transformer.resource.taxon">
             <argument type="service" id=".inner"/>
             <argument type="service" id="sylius.generator.taxon_slug"/>
             <argument type="service" id="sylius.repository.taxon"/>
@@ -59,9 +90,25 @@
         </service>
 
         <!-- RESOURCE IMPORTER -->
-        <service id="Jgrasp\PrestashopMigrationPlugin\Importer\ResourceImporterCollection" >
+        <service id="Jgrasp\PrestashopMigrationPlugin\Importer\ResourceImporterCollection">
             <argument type="tagged_iterator" tag="prestashop.importer"/>
         </service>
 
+        <!--RESOURCE PROVIDER -->
+        <service id="Jgrasp\PrestashopMigrationPlugin\Provider\ProductResourceProvider"
+                 decorates="prestashop.provider.product">
+            <argument type="service" id=".inner"/>
+            <argument type="service" id="sylius.factory.product"/>
+        </service>
+
+        <!-- REPOSITORY -->
+        <service id="prestashop.repository.image" alias="Jgrasp\PrestashopMigrationPlugin\Repository\Image\ImageRepository"/>
+
+        <service id="Jgrasp\PrestashopMigrationPlugin\Repository\Image\ImageRepository">
+            <argument>image</argument>
+            <argument>%prestashop.prefix%</argument>
+            <argument>id_image</argument>
+            <argument type="service" id="doctrine.dbal.prestashop_connection"/>
+        </service>
     </services>
 </container>

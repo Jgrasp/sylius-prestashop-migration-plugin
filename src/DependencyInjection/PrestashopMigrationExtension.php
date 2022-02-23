@@ -34,9 +34,16 @@ final class PrestashopMigrationExtension extends Extension
 
         $resources = $config['resources'];
         $prefix = $config['prefix'];
+        $publicDirectory = $config['public_directory'];
+
+        if (null === $publicDirectory) {
+            throw new InvalidConfigurationException('The configuration for "public_directory" is not defined. Please insert a value (ex : "https://www.example.com/img/p/")');
+        }
 
         $container->setParameter('prestashop.resources', $resources);
         $container->setParameter('prestashop.prefix', $prefix);
+        $container->setParameter('prestashop.public_directory', $config['public_directory']);
+        $container->setParameter('prestashop.tmp_directory', $config['tmp_directory']);
 
         foreach ($resources as $resource => $configuration) {
             $this->createRepositoryDefinition($prefix, $resource, $configuration, $container);
