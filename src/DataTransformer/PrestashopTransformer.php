@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Jgrasp\PrestashopMigrationPlugin\DataTransformer;
 
@@ -21,7 +22,7 @@ final class PrestashopTransformer implements TransformerInterface
     public function transform($data): ?ResourceInterface
     {
         $model = $this->modelTransformer->transform($data);
-        
+
         return $this->resourceTransformer->transform($model);
     }
 }

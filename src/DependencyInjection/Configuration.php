@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Jgrasp\PrestashopMigrationPlugin\DependencyInjection;
 
@@ -12,7 +13,6 @@ use Jgrasp\PrestashopMigrationPlugin\Model\Lang\LangModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Product\ProductModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Shop\ShopModel;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Address\AddressRepository;
-use Jgrasp\PrestashopMigrationPlugin\Repository\Category\CategoryRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Currency\CurrencyRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Customer\CustomerRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\EntityRepository;

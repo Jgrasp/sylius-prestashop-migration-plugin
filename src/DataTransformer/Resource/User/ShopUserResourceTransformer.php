@@ -7,7 +7,6 @@ use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\ResourceTransforme
 use Jgrasp\PrestashopMigrationPlugin\Model\Customer\CustomerModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
-use Sylius\Component\Core\Model\ShopUserInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 
