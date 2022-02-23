@@ -16,7 +16,7 @@ class ProductRepository extends EntityRepository
             ->from($this->getTable())
             ->where($query->expr()->like("reference", $query->expr()->literal($reference)));
 
-        return $this->getConnection()->fetchAllAssociative($query);
+        return $this->getConnection()->executeQuery($query)->fetchAllAssociative();
     }
 
     public function findBySlug(string $slug): array
@@ -28,7 +28,7 @@ class ProductRepository extends EntityRepository
             ->from($this->getTableTranslation())
             ->where($query->expr()->like("link_rewrite", $query->expr()->literal($slug)));
 
-        return $this->getConnection()->fetchAllAssociative($query);
+        return $this->getConnection()->executeQuery($query)->fetchAllAssociative();
     }
 
     public function getCategories(int $productId): array
@@ -40,7 +40,7 @@ class ProductRepository extends EntityRepository
             ->from($this->getPrefix().'category_product')
             ->where($query->expr()->eq("id_product", $productId));
 
-        return $this->getConnection()->fetchAllAssociative($query);
+        return $this->getConnection()->executeQuery($query)->fetchAllAssociative();
     }
 
     public function getShops(int $productId): array
@@ -52,7 +52,7 @@ class ProductRepository extends EntityRepository
             ->from($this->getTableChannel())
             ->where($query->expr()->eq("id_product", $productId));
 
-        return $this->getConnection()->fetchAllAssociative($query);
+        return $this->getConnection()->executeQuery($query)->fetchAllAssociative();
     }
 
     public function getImages(int $productId): array
@@ -65,6 +65,6 @@ class ProductRepository extends EntityRepository
             ->where($query->expr()->eq("id_product", $productId))
             ->orderBy('position', 'ASC');
 
-        return $this->getConnection()->fetchAllAssociative($query);
+        return $this->getConnection()->executeQuery($query)->fetchAllAssociative();
     }
 }

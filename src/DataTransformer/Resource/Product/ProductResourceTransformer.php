@@ -202,7 +202,7 @@ class ProductResourceTransformer implements ResourceTransformerInterface
                 $channelPricing->setChannelCode($channel->getCode());
             }
 
-            $channelPricing->setPrice($shop['price'] * 100);
+            $channelPricing->setPrice((int) $shop['price'] * 100);
             $productVariant->addChannelPricing($channelPricing);
         }
     }
