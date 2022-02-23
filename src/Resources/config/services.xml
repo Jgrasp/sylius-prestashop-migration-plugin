@@ -35,6 +35,11 @@
         </service>
 
         <!-- COLLECTOR -->
+        <service id="Jgrasp\PrestashopMigrationPlugin\DataCollector\Address\AddressCollector"
+                 decorates="prestashop.collector.address">
+            <argument type="service" id="prestashop.repository.address"/>
+        </service>
+
         <service id="Jgrasp\PrestashopMigrationPlugin\DataCollector\Customer\CustomerCollector"
                  decorates="prestashop.collector.customer">
             <argument type="service" id="prestashop.repository.customer"/>
@@ -47,12 +52,6 @@
             <argument type="service" id="prestashop.repository.currency"/>
         </service>
 
-        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Model\Category\CategoryModelTransformer"
-                 decorates="prestashop.data_transformer.model.category">
-            <argument type="service" id=".inner"/>
-            <argument type="service" id="prestashop.repository.category"/>
-        </service>
-
         <!-- RESOURCE TRANSFORMER -->
         <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\AdminUser\AdminUserResourceTransformer"
                  decorates="prestashop.data_transformer.resource.admin_user">
@@ -61,12 +60,24 @@
             <argument type="service" id="sylius.repository.locale"/>
         </service>
 
+        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Address\AddressResourceTransformer"
+                 decorates="prestashop.data_transformer.resource.address">
+            <argument type="service" id=".inner"/>
+            <argument type="service" id="sylius.repository.customer"/>
+            <argument type="service" id="sylius.repository.country"/>
+        </service>
+
         <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Channel\ChannelResourceTransformer"
                  decorates="prestashop.data_transformer.resource.channel">
             <argument type="service" id=".inner"/>
             <argument type="service" id="sylius.repository.locale"/>
             <argument type="service" id="sylius.repository.currency"/>
             <argument type="service" id="parameter_bag"/>
+        </service>
+
+        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Country\CountryResourceTransformer"
+                 decorates="prestashop.data_transformer.resource.country">
+            <argument type="service" id=".inner"/>
         </service>
 
         <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Lang\LangResourceTransformer"
@@ -101,6 +112,7 @@
             <argument type="service" id="Jgrasp\PrestashopMigrationPlugin\Model\LocaleFetcher"/>
         </service>
 
+
         <!-- RESOURCE IMPORTER -->
         <service id="Jgrasp\PrestashopMigrationPlugin\Importer\ResourceImporterCollection">
             <argument type="tagged_iterator" tag="prestashop.importer"/>
@@ -120,6 +132,15 @@
             <argument>image</argument>
             <argument>%prestashop.prefix%</argument>
             <argument>id_image</argument>
+            <argument type="service" id="doctrine.dbal.prestashop_connection"/>
+        </service>
+
+        <service id="prestashop.repository.country" alias="Jgrasp\PrestashopMigrationPlugin\Repository\Country\CountryRepository"/>
+
+        <service id="Jgrasp\PrestashopMigrationPlugin\Repository\Country\CountryRepository">
+            <argument>country</argument>
+            <argument>%prestashop.prefix%</argument>
+            <argument>id_country</argument>
             <argument type="service" id="doctrine.dbal.prestashop_connection"/>
         </service>
     </services>

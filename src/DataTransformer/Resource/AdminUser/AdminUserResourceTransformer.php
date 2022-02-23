@@ -29,9 +29,10 @@ class AdminUserResourceTransformer implements ResourceTransformerInterface
     /**
      * @param EmployeeModel $model
      *
-     * @return ResourceInterface
+     * @return ResourceInterface|null
+     * @throws Exception
      */
-    public function transform(ModelInterface $model): ResourceInterface
+    public function transform(ModelInterface $model): ?ResourceInterface
     {
         /**
          * @var AdminUserInterface $adminUser

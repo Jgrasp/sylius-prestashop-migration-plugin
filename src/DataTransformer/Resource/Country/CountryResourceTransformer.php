@@ -1,14 +1,14 @@
 <?php
+declare(strict_types=1);
 
-namespace Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Lang;
+namespace Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Country;
 
 use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\ResourceTransformerInterface;
+use Jgrasp\PrestashopMigrationPlugin\Model\Country\CountryModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
-use Sylius\Component\Core\Formatter\StringInflector;
-use Sylius\Component\Locale\Model\LocaleInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 
-class LangResourceTransformer implements ResourceTransformerInterface
+class CountryResourceTransformer implements ResourceTransformerInterface
 {
     private ResourceTransformerInterface $transformer;
 
@@ -17,15 +17,18 @@ class LangResourceTransformer implements ResourceTransformerInterface
         $this->transformer = $transformer;
     }
 
+    /**
+     * @param CountryModel $model
+     *
+     * @return ResourceInterface|null
+     */
     public function transform(ModelInterface $model): ?ResourceInterface
     {
-        /**
-         * @var LocaleInterface $locale
-         */
-        $locale = $this->transformer->transform($model);
-        $locale->setCode(StringInflector::nameToCode($locale->getCode()));
+        if (!$model->enabled) {
+            return null;
+        }
 
-        return $locale;
+        return $this->transformer->transform($model);
     }
 
 }

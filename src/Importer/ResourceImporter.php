@@ -17,10 +17,10 @@ class ResourceImporter implements ResourceImporterInterface
     private EntityManagerInterface $entityManager;
 
     public function __construct(
-        string                    $name,
+        string                 $name,
         DataCollectorInterface $collector,
-        TransformerInterface      $transformer,
-        EntityManagerInterface    $entityManager
+        TransformerInterface   $transformer,
+        EntityManagerInterface $entityManager
     )
     {
         $this->name = $name;
@@ -35,6 +35,11 @@ class ResourceImporter implements ResourceImporterInterface
 
         foreach ($data as $row) {
             $entity = $this->transformer->transform($row);
+
+            if (null === $entity) {
+                continue;
+            }
+
             $this->entityManager->persist($entity);
         }
 

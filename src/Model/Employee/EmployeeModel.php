@@ -5,9 +5,12 @@ namespace Jgrasp\PrestashopMigrationPlugin\Model\Employee;
 use DateTime;
 use Jgrasp\PrestashopMigrationPlugin\Attribute\Field;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
+use Jgrasp\PrestashopMigrationPlugin\Model\ToggleableTrait;
 
 class EmployeeModel implements ModelInterface
 {
+    use ToggleableTrait;
+
     #[Field(source: 'id_employee', target: 'prestashopId', id: true)]
     public int $id;
 
@@ -25,8 +28,4 @@ class EmployeeModel implements ModelInterface
 
     #[Field(source: 'lastname', target: 'lastname')]
     public string $lastname;
-
-    #[Field(source: 'active', target: 'enabled')]
-    public bool $enabled;
-
 }

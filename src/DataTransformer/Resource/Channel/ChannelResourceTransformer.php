@@ -40,7 +40,7 @@ class ChannelResourceTransformer implements ResourceTransformerInterface
      * @return ResourceInterface
      * @throws \Exception
      */
-    public function transform(ModelInterface $model): ResourceInterface
+    public function transform(ModelInterface $model): ?ResourceInterface
     {
         /**
          * @var ChannelInterface $channel

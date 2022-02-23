@@ -28,7 +28,7 @@ class ShopUserResourceTransformer implements ResourceTransformerInterface
      *
      * @return ResourceInterface
      */
-    public function transform(ModelInterface $model): ResourceInterface
+    public function transform(ModelInterface $model): ?ResourceInterface
     {
         /**
          * @var CustomerInterface $customer
