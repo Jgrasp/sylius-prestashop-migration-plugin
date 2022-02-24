@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Jgrasp\PrestashopMigrationPlugin\Provider;
+namespace Jgrasp\PrestashopMigrationPlugin\Provider\Product;
 
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
+use Jgrasp\PrestashopMigrationPlugin\Provider\ResourceProviderInterface;
 use Sylius\Component\Product\Factory\ProductFactoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;

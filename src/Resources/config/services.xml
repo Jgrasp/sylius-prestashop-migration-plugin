@@ -121,7 +121,7 @@
         </service>
 
         <!--RESOURCE PROVIDER -->
-        <service id="Jgrasp\PrestashopMigrationPlugin\Provider\ProductResourceProvider"
+        <service id="Jgrasp\PrestashopMigrationPlugin\Provider\Product\ProductResourceProvider"
                  decorates="prestashop.provider.product">
             <argument type="service" id=".inner"/>
             <argument type="service" id="sylius.factory.product"/>
