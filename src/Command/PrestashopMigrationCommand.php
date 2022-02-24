@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Jgrasp\PrestashopMigrationPlugin\Command;
 
 use Jgrasp\PrestashopMigrationPlugin\Importer\ResourceImporterCollection;
+use Jgrasp\PrestashopMigrationPlugin\Importer\ImporterInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -14,20 +15,22 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 final class PrestashopMigrationCommand extends Command
 {
-    private ResourceImporterCollection $resourceImporterCollection;
+    /**
+     * @var ResourceCommand[] $commands
+     */
+    private array $commands;
 
-    public function __construct(ResourceImporterCollection $resourceImporterCollection)
+    public function __construct(iterable $commands)
     {
-        parent::__construct();
+        $this->commands = $commands instanceof \Traversable ? iterator_to_array($commands) : $commands;
 
-        $this->resourceImporterCollection = $resourceImporterCollection;
+        parent::__construct();
     }
 
     public function configure()
     {
         $this
-            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Use force will erase the entire database.')
-            ->addOption('resource', 'r', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'You can put multiple values separated by a comma.', []);
+            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Use force will erase the entire database.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -54,16 +57,9 @@ final class PrestashopMigrationCommand extends Command
             $schema->run(new ArrayInput([]), $output);
         }
 
-        $resources = $input->getOption('resource');
-
-        $progressBar = new ProgressBar($output, $this->resourceImporterCollection->size($resources));
-        $progressBar->setFormat('%percent:3s%% [%bar%] %elapsed:6s%/%estimated:-6s%');
-
-        $this->resourceImporterCollection->run($resources, function (int $current) use ($output, $progressBar) {
-            $progressBar->setProgress($current);
-        });
-
-        $progressBar->finish();
+        foreach ($this->commands as $command) {
+            $command->run(new ArrayInput([]), $output);
+        }
 
         return Command::SUCCESS;
     }

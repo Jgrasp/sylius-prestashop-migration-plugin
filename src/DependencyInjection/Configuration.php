@@ -33,6 +33,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->scalarNode('connection')->defaultValue("")->info('Doctrine connection name')->cannotBeEmpty()->end()
             ->scalarNode('prefix')->defaultValue('ps_')->info('Table prefix for database')->cannotBeEmpty()->end()
+            ->scalarNode('flush_step')->defaultValue(100)->info('Number of persist between flush during import.')->cannotBeEmpty()->end()
             ->scalarNode('public_directory')->defaultNull()->info('The public directory where the product images are stored (ex : "https://www.example.com/img/p/")')->cannotBeEmpty()->end()
             ->scalarNode('tmp_directory')->defaultValue('/tmp/prestashop')->info('The temporary directory where the product images will be downloaded.')->cannotBeEmpty()->end();
 

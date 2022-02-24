@@ -57,3 +57,4 @@ prestashop_migration:
 ATTENTION : LA LOCALE DE SYLIUS PAR DEFAUT DOIT ÊTRE UNE LOCALE EXISTANTE DANS PRESTASHOP POUR QUE L'IMPORT SE PASSE
 BIEN
 
+Créer un fichier de configuration par défaut

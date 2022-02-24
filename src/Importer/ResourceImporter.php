@@ -5,46 +5,56 @@ namespace Jgrasp\PrestashopMigrationPlugin\Importer;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Jgrasp\PrestashopMigrationPlugin\DataCollector\DataCollectorInterface;
-use Jgrasp\PrestashopMigrationPlugin\DataTransformer\TransformerInterface;
 
-class ResourceImporter implements ResourceImporterInterface
+use Jgrasp\PrestashopMigrationPlugin\Persister\PersisterInterface;
+
+class ResourceImporter implements ImporterInterface
 {
     private string $name;
 
+    private int $step;
+
     private DataCollectorInterface $collector;
 
-    private TransformerInterface $transformer;
+    private PersisterInterface $persister;
 
     private EntityManagerInterface $entityManager;
 
     public function __construct(
         string                 $name,
+        int                    $step,
         DataCollectorInterface $collector,
-        TransformerInterface   $transformer,
+        PersisterInterface     $persister,
         EntityManagerInterface $entityManager
     )
     {
         $this->name = $name;
+        $this->step = $step;
         $this->collector = $collector;
-        $this->transformer = $transformer;
+        $this->persister = $persister;
         $this->entityManager = $entityManager;
     }
 
-    public function import(int $limit, int $offset): void
+    public function import(callable $callable = null): void
     {
-        $data = $this->collector->collect($limit, $offset);
+        $offset = 0;
 
-        foreach ($data as $row) {
-            $entity = $this->transformer->transform($row);
+        while ($offset < $this->size()) {
 
-            if (null === $entity) {
-                continue;
+            $collection = $this->collector->collect($this->step, $offset);
+
+            foreach ($collection as $item) {
+                $this->persister->persist($item);
             }
 
-            $this->entityManager->persist($entity);
-        }
+            $this->entityManager->flush();
 
-        $this->entityManager->flush();
+            $offset += $this->step;
+
+            if (null !== $callable) {
+                $callable($this->step);
+            }
+        }
     }
 
     public function size(): int

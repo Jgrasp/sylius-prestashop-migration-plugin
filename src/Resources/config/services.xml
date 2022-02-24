@@ -20,8 +20,8 @@
 
         <!-- COMMAND -->
         <service id="Jgrasp\PrestashopMigrationPlugin\Command\PrestashopMigrationCommand">
-            <argument type="service" id="Jgrasp\PrestashopMigrationPlugin\Importer\ResourceImporterCollection"/>
-            <tag name="console.command" command="prestashop:migrate"/>
+            <argument type="tagged_iterator" tag="prestashop.command.migration"/>
+            <tag name="console.command" command="prestashop:migration:all"/>
         </service>
 
         <service id="Jgrasp\PrestashopMigrationPlugin\Command\PrestashopMigrationImageCommand">
@@ -31,7 +31,8 @@
             <argument type="service" id="Jgrasp\PrestashopMigrationPlugin\Downloader\ImageDownloader"/>
             <argument type="service" id="sylius.factory.product_image"/>
             <argument type="service" id="sylius.image_uploader"/>
-            <tag name="console.command" command="prestashop:migrate:images"/>
+            <tag name="console.command" command="prestashop:migration:product:images"/>
+            <tag name="prestashop.command.migration" priority="-255"/>
         </service>
 
         <!-- COLLECTOR -->
@@ -50,6 +51,13 @@
                  decorates="prestashop.data_transformer.model.shop">
             <argument type="service" id=".inner"/>
             <argument type="service" id="prestashop.repository.currency"/>
+        </service>
+
+        <!-- PERSISTER -->
+        <service id="Jgrasp\PrestashopMigrationPlugin\Persister\Taxon\TaxonPersister"
+                 decorates="prestashop.persister.taxon">
+            <argument type="service" id=".inner"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
         </service>
 
         <!-- RESOURCE TRANSFORMER -->
@@ -112,12 +120,6 @@
             <argument type="service" id="Jgrasp\PrestashopMigrationPlugin\Model\LocaleFetcher"/>
         </service>
 
-
-        <!-- RESOURCE IMPORTER -->
-        <service id="Jgrasp\PrestashopMigrationPlugin\Importer\ResourceImporterCollection">
-            <argument type="tagged_iterator" tag="prestashop.importer"/>
-        </service>
-
         <!--RESOURCE PROVIDER -->
         <service id="Jgrasp\PrestashopMigrationPlugin\Provider\ProductResourceProvider"
                  decorates="prestashop.provider.product">
@@ -135,13 +137,5 @@
             <argument type="service" id="doctrine.dbal.prestashop_connection"/>
         </service>
 
-        <service id="prestashop.repository.country" alias="Jgrasp\PrestashopMigrationPlugin\Repository\Country\CountryRepository"/>
-
-        <service id="Jgrasp\PrestashopMigrationPlugin\Repository\Country\CountryRepository">
-            <argument>country</argument>
-            <argument>%prestashop.prefix%</argument>
-            <argument>id_country</argument>
-            <argument type="service" id="doctrine.dbal.prestashop_connection"/>
-        </service>
     </services>
 </container>

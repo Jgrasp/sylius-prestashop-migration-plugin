@@ -15,6 +15,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 
@@ -56,13 +57,14 @@ class PrestashopMigrationImageCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
+        $io->title('Start migration of product images');
+
         $products = $this->resourceRepository->findAll();
 
         $progressBar = new ProgressBar($output, count($products));
 
         foreach ($products as $product) {
-            $progressBar->advance();
-
             if (!$product->getPrestashopId()) {
                 continue;
             }
@@ -88,9 +90,14 @@ class PrestashopMigrationImageCommand extends Command
             }
 
             $this->entityManager->flush();
+            $progressBar->advance();
         }
 
         $progressBar->finish();
+
+        $io->newLine(2);
+        $io->success('Migration successfull');
+        $io->writeln('---------------------------------------------------------------------------');
 
         return Command::SUCCESS;
     }

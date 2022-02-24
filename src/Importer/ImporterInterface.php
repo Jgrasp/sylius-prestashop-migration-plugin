@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Jgrasp\PrestashopMigrationPlugin\Importer;
 
-interface ResourceImporterInterface
+interface ImporterInterface
 {
-    public function import(int $limit, int $offset): void;
+    public function import(callable $callable = null): void;
 
     public function size(): int;
 

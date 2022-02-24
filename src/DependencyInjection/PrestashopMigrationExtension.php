@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Jgrasp\PrestashopMigrationPlugin\DependencyInjection;
 
 use Jgrasp\PrestashopMigrationPlugin\Attribute\PropertyAttributeAccessor;
+use Jgrasp\PrestashopMigrationPlugin\Command\ResourceCommand;
 use Jgrasp\PrestashopMigrationPlugin\DataCollector\EntityCollector;
 use Jgrasp\PrestashopMigrationPlugin\DataCollector\EntityTranslatableCollector;
 use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Model\ModelTransformer;
@@ -13,6 +14,7 @@ use Jgrasp\PrestashopMigrationPlugin\Importer\ResourceImporter;
 use Jgrasp\PrestashopMigrationPlugin\Model\LocaleFetcher;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelMapper;
+use Jgrasp\PrestashopMigrationPlugin\Persister\ResourcePersister;
 use Jgrasp\PrestashopMigrationPlugin\Provider\ResourceProvider;
 use Jgrasp\PrestashopMigrationPlugin\Repository\EntityRepositoryInterface;
 use ReflectionClass;
@@ -37,6 +39,7 @@ final class PrestashopMigrationExtension extends Extension
         $resources = $config['resources'];
         $prefix = $config['prefix'];
         $publicDirectory = $config['public_directory'];
+        $flushStep = $config['flush_step'];
 
         if (null === $publicDirectory) {
             throw new InvalidConfigurationException('The configuration for "public_directory" is not defined. Please insert a value (ex : "https://www.example.com/img/p/")');
@@ -44,16 +47,19 @@ final class PrestashopMigrationExtension extends Extension
 
         $container->setParameter('prestashop.resources', $resources);
         $container->setParameter('prestashop.prefix', $prefix);
-        $container->setParameter('prestashop.public_directory', $config['public_directory']);
+        $container->setParameter('prestashop.public_directory', $publicDirectory);
         $container->setParameter('prestashop.tmp_directory', $config['tmp_directory']);
+        $container->setParameter('prestashop.flush_step', $flushStep);
 
         foreach ($resources as $resource => $configuration) {
             $this->createRepositoryDefinition($prefix, $resource, $configuration, $container);
             $this->createCollectorDefinition($configuration, $container);
             $this->createMapperDefinition($resource, $configuration, $container);
             $this->createProviderDefinition($configuration, $container);
-            $this->createDataTransformer($configuration, $container);
-            $this->createResourceImporter($configuration, $container);
+            $this->createDataTransformerDefinition($configuration, $container);
+            $this->createImporterDefinition($configuration, $container);
+            $this->createPersisterDefinition($configuration, $container);
+            $this->createCommandDefinition($configuration, $container);
         }
     }
 
@@ -137,7 +143,7 @@ final class PrestashopMigrationExtension extends Extension
         $container->setDefinition($definitionId, $definition);
     }
 
-    private function createDataTransformer(array $configuration, ContainerBuilder $container): void
+    private function createDataTransformerDefinition(array $configuration, ContainerBuilder $container): void
     {
         $entity = $configuration['sylius'];
         $table = $configuration['table'];
@@ -176,7 +182,7 @@ final class PrestashopMigrationExtension extends Extension
         $container->setDefinition($this->getDefinitionDataTransformerId($entity), $definition);
     }
 
-    private function createResourceImporter(array $configuration, ContainerBuilder $container): void
+    private function createImporterDefinition(array $configuration, ContainerBuilder $container): void
     {
         $entity = $configuration['sylius'];
         $table = $configuration['table'];
@@ -185,8 +191,9 @@ final class PrestashopMigrationExtension extends Extension
 
         $arguments = [
             $definitionId,
+            $container->getParameter('prestashop.flush_step'),
             new Reference($this->getDefinitionCollectorId($table)),
-            new Reference($this->getDefinitionDataTransformerId($entity)),
+            new Reference($this->getDefinitionPersisterId($entity)),
             new Reference('doctrine.orm.entity_manager')
         ];
 
@@ -198,9 +205,55 @@ final class PrestashopMigrationExtension extends Extension
         $container->setDefinition($definitionId, $definition);
     }
 
+    private function createPersisterDefinition(array $configuration, ContainerBuilder $container): void
+    {
+        $entity = $configuration['sylius'];
+        $definitionId = $this->getDefinitionPersisterId($entity);
+
+        $arguments = [
+            new Reference('doctrine.orm.entity_manager'),
+            new Reference($this->getDefinitionDataTransformerId($entity)),
+        ];
+
+        $definition = new Definition(ResourcePersister::class, $arguments);
+        $definition
+            ->setPublic(false);
+
+        $container->setDefinition($definitionId, $definition);
+    }
+
+    private function createCommandDefinition(array $configuration, ContainerBuilder $container): void
+    {
+        $entity = $configuration['sylius'];
+        $definitionId = $this->getDefinitionCommandId($entity);
+
+        $arguments = [
+            $entity,
+            new Reference($this->getDefinitionImporterId($entity)),
+        ];
+
+        $definition = new Definition(ResourceCommand::class, $arguments);
+        $definition
+            ->addTag('console.command', ['command' => sprintf('prestashop:migration:%s', $entity)])
+            ->addTag('prestashop.command.migration', ['priority' => $configuration['priority']])
+            ->setPublic(true);
+
+        $container->setDefinition($definitionId, $definition);
+    }
+
     private function getDefinitionImporterId(string $resource): string
     {
         return $this->getDefinitionId('importer', $resource);
+    }
+
+    private function getDefinitionPersisterId(string $resource): string
+    {
+        return $this->getDefinitionId('persister', $resource);
+    }
+
+    private function getDefinitionCommandId(string $resource): string
+    {
+        return $this->getDefinitionId('command', $resource);
     }
 
     private function getDefinitionRepositoryId(string $resource): string

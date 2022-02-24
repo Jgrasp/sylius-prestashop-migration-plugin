@@ -10,10 +10,10 @@ use Jgrasp\PrestashopMigrationPlugin\Model\LocaleFetcher;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
 use Sylius\Component\Core\Formatter\StringInflector;
 use Sylius\Component\Core\Model\TaxonInterface;
-use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Sylius\Component\Taxonomy\Generator\TaxonSlugGeneratorInterface;
 use Sylius\Component\Taxonomy\Repository\TaxonRepositoryInterface;
+
 
 final class TaxonResourceTransformer implements ResourceTransformerInterface
 {
