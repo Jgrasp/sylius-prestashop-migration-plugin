@@ -1,5 +1,5 @@
 # How to use
-
+***
 ### Show me the list !
 
 This tool works only in command line. To display all available commands, use the following command :
@@ -29,6 +29,8 @@ correct order.
 
 For example, it would be impossible to import the addresses without first importing the users.
 
+***
+
 ### One command to import them all
 
 Fortunately, there is a command among the list that allows migrating the entities in the correct order.
@@ -48,6 +50,8 @@ $ php bin/console prestashop:migration:all --force
 ```
 
 :warning: This command will completely delete the database and re-create it. Be sure of what you are doing. Never use this command on a live site. Also verify that the database user has sufficient rights.
+
+***
 
 <br>
 

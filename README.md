@@ -12,7 +12,7 @@ I am not responsible for the loss of your data. I created this plugin with the a
 I will try to keep the documentation as clear as possible.
 
 I hope this plugin helps you as much as it helped me. I will continue to make it grow and evolve with the new projects
-that I will meet (and your feedback perhaps? :)).
+that I will meet (and your feedback perhaps? :blush:).
 
 ***
 
