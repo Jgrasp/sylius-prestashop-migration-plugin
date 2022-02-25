@@ -127,7 +127,7 @@ parameters:
 
 <br>
 
-Congratulations ! Your project is ready for the migration. Let's start with [How to run the migration](doc/execute.md) !
+Congratulations ! Your project is ready for the migration. Let's start with [How to use](doc/how_to_use.md) !
 
 ***
 
