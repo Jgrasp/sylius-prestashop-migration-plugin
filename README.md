@@ -23,7 +23,7 @@ that I will meet (and your feedback perhaps? :)).
 ***
 # Installation
 
-1. Add the package to your project
+1. Add the plugin to your project
 
 ```bash 
 $ composer require jgrasp/sylius-prestashop-migration-plugin
