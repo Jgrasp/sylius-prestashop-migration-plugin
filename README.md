@@ -18,9 +18,11 @@ that I will meet (and your feedback perhaps? :)).
 
 # Requirements
 
-- Sylius 1.10 minimum 
+- Sylius 1.10 minimum
 - PHP 8.0 minimum
+
 ***
+
 # Installation
 
 1. Add the plugin to your project
@@ -28,6 +30,7 @@ that I will meet (and your feedback perhaps? :)).
 ```bash 
 $ composer require jgrasp/sylius-prestashop-migration-plugin
 ```
+
 <br>
 
 2. Add plugin dependency to your ```config/bundles.php``` file:
@@ -38,11 +41,22 @@ $ composer require jgrasp/sylius-prestashop-migration-plugin
         Jgrasp\PrestashopMigrationPlugin\PrestashopMigrationPlugin::class => ['all' => true], 
     ]
 ```
+
 <br>
 
-3. Create a new DBAL connection
+3. Add .env variables
 
-To retrieve data from Prestashop, the plugin will directly fetch information from the database.
+```dotenv
+   # Enter the correct Prestashop database login details.
+   PRESTASHOP_DATABASE_URL=mysql://root@127.0.0.1/sylius_%kernel.environment%
+   
+   # Custom the valid URL where product images are stored. If this variable is empty, the plugin will try to find images with the Prestashop database. 
+   PRESTASHOP_IMG_DIRECTORY_URL=https://www.example.com/img/p/ 
+```
+
+<br>
+
+4. Create a new doctrine DBAL connection
 
 ```yaml
 doctrine:
@@ -52,69 +66,69 @@ doctrine:
         url: '%env(resolve:PRESTASHOP_DATABASE_URL)%'
 ```
 
+<br>
 
+5. Add package configuration
 
+Create a new configuration file in ```config/packages``` like ```prestashop.yaml``` and put this configuration :
+
+```yaml
+prestashop_migration:
+  # The directory for product images
+  public_directory: "%env(PRESTASHOP_IMG_DIRECTORY_URL)%"
+
+  # Doctrine DBAL connection to retrieve data from Prestashop  
+  connection: prestashop
+
+  # Read the documentation to see how custom this field. 
+  resources: ~
+```
+<br>
+
+6. Custom Entities
+
+Add the following code
+
+```php
+use PrestashopTrait;
+```
+
+in entities : 
+
+- ```App\Entity\Addressing\Address```
+- ```App\Entity\Addressing\Country```
+- ```App\Entity\Channel\Channel```
+- ```App\Entity\Currency\Currency```
+- ```App\Entity\Customer\Customer```
+- ```App\Entity\Locale\Locale```
+- ```App\Entity\Product\Product```
+- ```App\Entity\User\AdminUser```
+
+This trait is essential & add a link between Sylius & Prestashop entities.
+
+<br>
+
+7. Upgrade your database
+
+```bash
+$ php bin/console doctrine:migrations:diff
+$ php bin/console doctrine:migrations:migrate
+```
+
+<br>
+
+8. Configure the locale parameter
+
+The parameter must be a locale that exists in the list of active languages of the Prestashop you want to migrate. Without this, the migration of the translations will not be able to be done correctly.
+```yaml
+parameters:
+    locale: en_EN
+```
+
+<br>
+
+Congratulations ! Your project is ready for the migration. Let's start with [How to run the migration](doc/execute.md) !
 
 ***
 
-- [Installation](doc/installation.md)
 
-Tuto :
-
-Créer une nouvelle connexion doctrine pour Prestashop
-
-```
-doctrine:
-    dbal:
-        connections:
-            prestashop:
-                dbname:
-                user:
-                password:
-                host:
-                server_version:
-```
-
-Ajouter PrestashopTrait aux entités :
-
-- Taxon
-- Product
-
-Todo :
-
-A migrer :
-
-- Groupe de clients
-- Clients
-
-A implémenter :
-
-- Pour l'import des images, il faut prendre en compte les BDD très grandes et faire des flush réguliers.
-- Améliorer le script d'import des images
-
-# Ajouter une nouvelle entité à transformer :
-
-Exemple avec une entité Book
-
-## Créer un model
-
-## Créer un
-
-## Ajouter la configuration
-
-```
-prestashop_migration:
-    resources:
-        book:
-            table: book
-            repository: App\Prestashop\Repository\Book\BookRepository
-            model: App\Prestashop\Model\Book\BookModel
-            primary_key: id_book
-            sylius: book
-            
-```
-
-ATTENTION : LA LOCALE DE SYLIUS PAR DEFAUT DOIT ÊTRE UNE LOCALE EXISTANTE DANS PRESTASHOP POUR QUE L'IMPORT SE PASSE
-BIEN
-
-Créer un fichier de configuration par défaut
