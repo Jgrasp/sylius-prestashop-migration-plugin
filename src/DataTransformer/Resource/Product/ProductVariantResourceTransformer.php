@@ -105,7 +105,7 @@ class ProductVariantResourceTransformer implements ResourceTransformerInterface
             }
 
             $defaultPrice = $this->productEntityRepository->getPriceByShopId($product->getPrestashopId(), $channel->getPrestashopId());
-            $price = ($defaultPrice + $model->price) * 100;
+            $price = (int) (($defaultPrice + $model->price) * 100);
 
 
             $channelPricing->setPrice($price);
