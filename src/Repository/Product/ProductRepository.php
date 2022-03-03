@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Jgrasp\PrestashopMigrationPlugin\Repository\Product;
 
 use Jgrasp\PrestashopMigrationPlugin\Repository\EntityRepository;
+use function Doctrine\DBAL\Query\QueryBuilder;
 
 class ProductRepository extends EntityRepository
 {
@@ -66,5 +67,19 @@ class ProductRepository extends EntityRepository
             ->orderBy('position', 'ASC');
 
         return $this->getConnection()->executeQuery($query)->fetchAllAssociative();
+    }
+
+    public function getPriceByShopId(int $productId, int $shopId): float
+    {
+        $query = $this->createQueryBuilder();
+
+        $query
+            ->select('price')
+            ->from($this->getTableChannel())
+            ->where($query->expr()->eq('id_product', $productId))
+            ->andWhere($query->expr()->eq('id_shop', $shopId));
+
+        return (float) $this->getConnection()->executeQuery($query)->fetchOne();
+
     }
 }

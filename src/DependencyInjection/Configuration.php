@@ -12,12 +12,14 @@ use Jgrasp\PrestashopMigrationPlugin\Model\Currency\CurrencyModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Customer\CustomerModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Employee\EmployeeModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Lang\LangModel;
+use Jgrasp\PrestashopMigrationPlugin\Model\Product\ProductAttributeModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Product\ProductModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Shop\ShopModel;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Address\AddressRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Currency\CurrencyRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Customer\CustomerRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\EntityRepository;
+use Jgrasp\PrestashopMigrationPlugin\Repository\Product\ProductAttributeRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Product\ProductRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Shop\ShopRepository;
 use Symfony\Component\Config\Definition\Builder\NodeBuilder;
@@ -159,6 +161,18 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('use_translation')->defaultValue(true)->end()
                             ->scalarNode('sylius')->defaultValue('product_option_value')->end()
                             ->scalarNode('priority')->defaultValue(205)->end()
+                        ->end()
+                    ->end()
+                    ->arrayNode('product_variant')
+                        ->addDefaultsIfNotSet()
+                        ->children()
+                            ->scalarNode('table')->defaultValue('product_attribute')->end()
+                            ->scalarNode('repository')->defaultValue(ProductAttributeRepository::class)->end()
+                            ->scalarNode('model')->defaultValue(ProductAttributeModel::class)->end()
+                            ->scalarNode('primary_key')->defaultValue('id_product_attribute')->end()
+                            ->scalarNode('use_translation')->defaultValue(false)->end()
+                            ->scalarNode('sylius')->defaultValue('product_variant')->end()
+                            ->scalarNode('priority')->defaultValue(190)->end()
                         ->end()
                     ->end()
                     ->arrayNode('taxon')

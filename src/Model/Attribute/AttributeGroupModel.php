@@ -14,6 +14,6 @@ class AttributeGroupModel implements ModelInterface
     #[Field(source: 'position', target: 'position')]
     public int $position;
 
-    #[Field(source: 'name', target: 'value', translatable: true)]
+    #[Field(source: 'name', translatable: true)]
     public array $name;
 }

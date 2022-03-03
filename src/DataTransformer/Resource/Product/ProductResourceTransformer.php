@@ -8,6 +8,7 @@ use Jgrasp\PrestashopMigrationPlugin\Model\LocaleFetcher;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
 use Jgrasp\PrestashopMigrationPlugin\Model\Product\ProductModel;
 use Jgrasp\PrestashopMigrationPlugin\Repository\EntityRepositoryInterface;
+use Jgrasp\PrestashopMigrationPlugin\Repository\Product\ProductAttributeRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Product\ProductRepository;
 use Sylius\Component\Core\Formatter\StringInflector;
 use Sylius\Component\Core\Model\ChannelInterface;
@@ -18,6 +19,7 @@ use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Model\TaxonInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
 use Sylius\Component\Product\Generator\SlugGenerator;
+use Sylius\Component\Product\Model\ProductOptionValueInterface;
 use Sylius\Component\Product\Resolver\ProductVariantResolverInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
@@ -27,14 +29,17 @@ class ProductResourceTransformer implements ResourceTransformerInterface
 {
     private ResourceTransformerInterface $transformer;
 
-    /**
-     * @var ProductRepository $productRepository
-     */
+    /** @var ProductRepository $productRepository */
     private EntityRepositoryInterface $productRepository;
+
+    /** @var ProductAttributeRepository $productAttributeRepository */
+    private EntityRepositoryInterface $productAttributeRepository;
 
     private RepositoryInterface $taxonRepository;
 
     private RepositoryInterface $channelRepository;
+
+    private RepositoryInterface $productOptionValueRepository;
 
     private FactoryInterface $productTaxonFactory;
 
@@ -49,8 +54,10 @@ class ProductResourceTransformer implements ResourceTransformerInterface
     public function __construct(
         ResourceTransformerInterface    $transformer,
         EntityRepositoryInterface       $productRepository,
+        EntityRepositoryInterface       $productAttributeRepository,
         RepositoryInterface             $taxonRepository,
         RepositoryInterface             $channelRepository,
+        RepositoryInterface             $productOptionValueRepository,
         FactoryInterface                $productTaxonFactory,
         FactoryInterface                $channelPricingFactory,
         ProductVariantResolverInterface $productVariantResolver,
@@ -60,8 +67,10 @@ class ProductResourceTransformer implements ResourceTransformerInterface
     {
         $this->transformer = $transformer;
         $this->productRepository = $productRepository;
+        $this->productAttributeRepository = $productAttributeRepository;
         $this->taxonRepository = $taxonRepository;
         $this->channelRepository = $channelRepository;
+        $this->productOptionValueRepository = $productOptionValueRepository;
         $this->productTaxonFactory = $productTaxonFactory;
         $this->channelPricingFactory = $channelPricingFactory;
         $this->defaultVariantResolver = $productVariantResolver;
@@ -100,6 +109,7 @@ class ProductResourceTransformer implements ResourceTransformerInterface
         $this->addCode($product, $model);
         $this->addTaxons($product, $model);
         $this->addChannel($product, $model);
+        $this->addOptions($product, $model);
         $this->addVariant($product);
 
         return $product;
@@ -166,10 +176,42 @@ class ProductResourceTransformer implements ResourceTransformerInterface
 
     private function addVariant(ProductInterface $product): void
     {
-        $productVariant = $this->defaultVariantResolver->getVariant($product);
+        if ($product->getOptions()->isEmpty()) {
+            $productVariant = $this->defaultVariantResolver->getVariant($product);
 
-        $productVariant->setCode($product->getCode());
-        $productVariant->setName($product->getName());
+            $productVariant->setCode($product->getCode());
+            $productVariant->setName($product->getName());
+        }
+    }
+
+    private function addOptions(ProductInterface $product, ProductModel $model): void
+    {
+        foreach ($product->getOptions() as $option) {
+            $product->removeOption($option);
+        }
+
+        $attributes = $this->productAttributeRepository->getAttributesByProductId($model->id);
+
+        foreach ($attributes as $attribute) {
+            $attributeId = $attribute['id_attribute'];
+
+            /** @var ProductOptionValueInterface|null $productOptionValue */
+            $productOptionValue = $this->productOptionValueRepository->findOneBy(['prestashopId' => $attributeId]);
+
+            if ($productOptionValue && !$product->hasOption($productOptionValue->getOption())) {
+                $product->addOption($productOptionValue->getOption());
+            }
+        }
+
+        //If we have options, we destroy all variants to prevent future variation import
+        if ($product->hasOptions()) {
+            foreach ($product->getVariants() as $variant) {
+                $product->removeVariant($variant);
+            }
+
+            //Choose match because Prestashop has no name for a variation.
+            $product->setVariantSelectionMethod(ProductInterface::VARIANT_SELECTION_MATCH);
+        }
     }
 
     private function addChannel(ProductInterface $product, ProductModel $model): void
@@ -190,20 +232,24 @@ class ProductResourceTransformer implements ResourceTransformerInterface
 
             $product->addChannel($channel);
 
-            /**
-             * @var ProductVariantInterface $productVariant
-             */
-            $productVariant = $this->defaultVariantResolver->getVariant($product);
-            $channelPricing = $productVariant->getChannelPricingForChannel($channel);
+            //if product has no options, we need to create a default variation to set the price
+            if (!$product->hasOptions()) {
 
-            if (null === $channelPricing) {
-                /** @var ChannelPricingInterface $channelPricing */
-                $channelPricing = $this->channelPricingFactory->createNew();
-                $channelPricing->setChannelCode($channel->getCode());
+                /**
+                 * @var ProductVariantInterface $productVariant
+                 */
+                $productVariant = $this->defaultVariantResolver->getVariant($product);
+                $channelPricing = $productVariant->getChannelPricingForChannel($channel);
+
+                if (null === $channelPricing) {
+                    /** @var ChannelPricingInterface $channelPricing */
+                    $channelPricing = $this->channelPricingFactory->createNew();
+                    $channelPricing->setChannelCode($channel->getCode());
+                }
+
+                $channelPricing->setPrice((int)$shop['price'] * 100);
+                $productVariant->addChannelPricing($channelPricing);
             }
-
-            $channelPricing->setPrice((int) $shop['price'] * 100);
-            $productVariant->addChannelPricing($channelPricing);
         }
     }
 }

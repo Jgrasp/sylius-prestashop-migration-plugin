@@ -104,6 +104,7 @@ in entities :
 - ```App\Entity\Product\Product```
 - ```App\Entity\Product\ProductOption```
 - ```App\Entity\Product\ProductOptionValue```
+- ```App\Entity\Product\ProductVariant```
 - ```App\Entity\User\AdminUser```
 
 This trait is essential & add a link between Sylius & Prestashop entities.
