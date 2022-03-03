@@ -106,6 +106,19 @@
             <argument type="service" id="Jgrasp\PrestashopMigrationPlugin\Model\LocaleFetcher"/>
         </service>
 
+        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Product\ProductOptionResourceTransformer"
+                 decorates="prestashop.data_transformer.resource.product_option">
+            <argument type="service" id=".inner"/>
+            <argument type="service" id="Jgrasp\PrestashopMigrationPlugin\Model\LocaleFetcher"/>
+        </service>
+
+        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Product\ProductOptionValueResourceTransformer"
+                 decorates="prestashop.data_transformer.resource.product_option_value">
+            <argument type="service" id=".inner"/>
+            <argument type="service" id="sylius.repository.product_option"/>
+            <argument type="service" id="Jgrasp\PrestashopMigrationPlugin\Model\LocaleFetcher"/>
+        </service>
+
         <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\User\ShopUserResourceTransformer"
                  decorates="prestashop.data_transformer.resource.customer">
             <argument type="service" id=".inner"/>
