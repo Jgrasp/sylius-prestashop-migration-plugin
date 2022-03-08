@@ -63,6 +63,7 @@ class TaxRateResourceTransformer implements ResourceTransformerInterface
         $resource->setAmount($resource->getAmount() / 100);
         $resource->setCode(StringInflector::nameToLowercaseCode($resource->getName()));
         $resource->setCalculator('default');
+        $resource->setIncludedInPrice(true);
 
         if (null === $resource->getName()) {
             return null;
@@ -74,7 +75,7 @@ class TaxRateResourceTransformer implements ResourceTransformerInterface
             return null;
         }
 
-        $this->addTaxCategory($resource, $model);
+        $this->addTaxCategory($resource);
 
         if (null === $resource->getCategory()) {
             return null;
@@ -83,31 +84,22 @@ class TaxRateResourceTransformer implements ResourceTransformerInterface
         return $resource;
     }
 
-    private function addTaxCategory(TaxRateInterface $resource, ModelInterface $model): void
+    private function addTaxCategory(TaxRateInterface $resource): void
     {
-        $localeCode = $this->localeContext->getLocaleCode();
-
-        //@Todo add logs
-        if (!array_key_exists($localeCode, $model->name)) {
-            return;
-        }
-
-        $name = $this->getTaxName($model);
-        $taxCategoryName = substr($name, 0, strrpos($name, ' '));
-        $taxCategoryCode = StringInflector::nameToLowercaseCode($taxCategoryName);
 
         /** @var TaxCategoryInterface $taxCategory */
-        $taxCategory = $this->taxCategoryRepository->findOneBy(['code' => $taxCategoryCode]);
+        $taxCategory = $this->taxCategoryRepository->findOneBy(['code' => $resource->getCode()]);
 
         if (null === $taxCategory) {
             /** @var TaxCategoryInterface $taxCategory */
             $taxCategory = $this->taxCategoryFactory->createNew();
-            $taxCategory->setCode($taxCategoryCode);
-            $taxCategory->setName($taxCategoryName);
-
-            $this->entityManager->persist($taxCategory);
-            $this->entityManager->flush();
         }
+
+        $taxCategory->setCode($resource->getCode());
+        $taxCategory->setName($resource->getName());
+
+        $this->entityManager->persist($taxCategory);
+        $this->entityManager->flush();
 
         $resource->setCategory($taxCategory);
     }
@@ -141,11 +133,6 @@ class TaxRateResourceTransformer implements ResourceTransformerInterface
         }
 
         return $model->getName($localeCode);
-    }
-
-    private function hasTaxName(ModelInterface $model): bool
-    {
-        return null !== $this->getTaxName($model);
     }
 
     private function getCountryCode(ModelInterface $model): ?string
