@@ -78,6 +78,9 @@
         <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Address\ZoneResourceTransformer"
                  decorates="prestashop.data_transformer.resource.zone">
             <argument type="service" id=".inner"/>
+            <argument type="service" id="sylius.repository.country"/>
+            <argument type="service" id="prestashop.repository.country"/>
+            <argument type="service" id="sylius.factory.zone_member"/>
         </service>
 
         <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Channel\ChannelResourceTransformer"
