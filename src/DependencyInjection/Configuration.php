@@ -15,6 +15,7 @@ use Jgrasp\PrestashopMigrationPlugin\Model\Lang\LangModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Product\ProductAttributeModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Product\ProductModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Shop\ShopModel;
+use Jgrasp\PrestashopMigrationPlugin\Model\Tax\TaxModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Zone\ZoneModel;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Address\AddressRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Country\CountryRepository;
@@ -187,6 +188,18 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('use_translation')->defaultValue(true)->end()
                             ->scalarNode('sylius')->defaultValue('taxon')->end()
                             ->scalarNode('priority')->defaultValue(210)->end()
+                        ->end()
+                    ->end()
+                    ->arrayNode('tax_rate')
+                        ->addDefaultsIfNotSet()
+                        ->children()
+                            ->scalarNode('table')->defaultValue('tax')->end()
+                            ->scalarNode('repository')->defaultValue(EntityRepository::class)->end()
+                            ->scalarNode('model')->defaultValue(TaxModel::class)->end()
+                            ->scalarNode('primary_key')->defaultValue('id_tax')->end()
+                            ->scalarNode('use_translation')->defaultValue(true)->end()
+                            ->scalarNode('sylius')->defaultValue('tax_rate')->end()
+                            ->scalarNode('priority')->defaultValue(255)->end()
                         ->end()
                     ->end()
                     ->arrayNode('zone')

@@ -146,6 +146,16 @@
             <argument type="service" id="sylius.factory.shop_user"/>
         </service>
 
+        <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Taxation\TaxRateResourceTransformer"
+                 decorates="prestashop.data_transformer.resource.tax_rate">
+            <argument type="service" id=".inner"/>
+            <argument type="service" id="sylius.repository.tax_category"/>
+            <argument type="service" id="sylius.repository.zone_member"/>
+            <argument type="service" id="sylius.factory.tax_category"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="sylius.context.locale"/>
+        </service>
+
         <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Taxon\TaxonResourceTransformer"
                  decorates="prestashop.data_transformer.resource.taxon">
             <argument type="service" id=".inner"/>
