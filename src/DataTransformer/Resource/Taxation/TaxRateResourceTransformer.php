@@ -63,7 +63,6 @@ class TaxRateResourceTransformer implements ResourceTransformerInterface
         $resource->setAmount($resource->getAmount() / 100);
         $resource->setCode(StringInflector::nameToLowercaseCode($resource->getName()));
         $resource->setCalculator('default');
-        $resource->setIncludedInPrice(true);
 
         if (null === $resource->getName()) {
             return null;
