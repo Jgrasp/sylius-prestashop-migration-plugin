@@ -106,6 +106,7 @@ in entities :
 - ```App\Entity\Product\ProductOption```
 - ```App\Entity\Product\ProductOptionValue```
 - ```App\Entity\Product\ProductVariant```
+- ```App\Entity\Shipping\ShippingMethod```
 - ```App\Entity\Taxation\TaxRate```
 - ```App\Entity\User\AdminUser```
 

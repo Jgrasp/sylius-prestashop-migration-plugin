@@ -17,6 +17,8 @@ use Jgrasp\PrestashopMigrationPlugin\Model\ModelMapper;
 use Jgrasp\PrestashopMigrationPlugin\Persister\ResourcePersister;
 use Jgrasp\PrestashopMigrationPlugin\Provider\ResourceProvider;
 use Jgrasp\PrestashopMigrationPlugin\Repository\EntityRepositoryInterface;
+use Jgrasp\PrestashopMigrationPlugin\Validator\ResourceValidator;
+use Jgrasp\PrestashopMigrationPlugin\Validator\ViolationBagInterface;
 use ReflectionClass;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\FileLocator;
@@ -58,6 +60,7 @@ final class PrestashopMigrationExtension extends Extension
             $this->createProviderDefinition($configuration, $container);
             $this->createDataTransformerDefinition($configuration, $container);
             $this->createImporterDefinition($configuration, $container);
+            $this->createValidatorDefinition($configuration, $container);
             $this->createPersisterDefinition($configuration, $container);
             $this->createCommandDefinition($configuration, $container);
         }
@@ -148,7 +151,7 @@ final class PrestashopMigrationExtension extends Extension
         $entity = $configuration['sylius'];
         $table = $configuration['table'];
 
-        $modelTransformerId = $this->getDefinitionDataTransformerId($table, 'model');
+        $modelTransformerId = $this->getDefinitionDataTransformerId($entity, 'model');
         $resourceTransformerId = $this->getDefinitionDataTransformerId($entity, 'resource');
         $mapperId = $this->getDefinitionMapperId($entity);
         $providerId = $this->getDefinitionProviderId($entity);
@@ -194,7 +197,8 @@ final class PrestashopMigrationExtension extends Extension
             $container->getParameter('prestashop.flush_step'),
             new Reference($this->getDefinitionCollectorId($table)),
             new Reference($this->getDefinitionPersisterId($entity)),
-            new Reference('doctrine.orm.entity_manager')
+            new Reference('doctrine.orm.entity_manager'),
+            new Reference(ViolationBagInterface::class)
         ];
 
         $definition = new Definition(ResourceImporter::class, $arguments);
@@ -213,6 +217,7 @@ final class PrestashopMigrationExtension extends Extension
         $arguments = [
             new Reference('doctrine.orm.entity_manager'),
             new Reference($this->getDefinitionDataTransformerId($entity)),
+            new Reference($this->getDefinitionValidatorId($entity)),
         ];
 
         $definition = new Definition(ResourcePersister::class, $arguments);
@@ -237,6 +242,22 @@ final class PrestashopMigrationExtension extends Extension
             ->addTag('console.command', ['command' => sprintf('prestashop:migration:%s', $entity)])
             ->addTag('prestashop.command.migration', ['priority' => $configuration['priority']])
             ->setPublic(true);
+
+        $container->setDefinition($definitionId, $definition);
+    }
+
+    private function createValidatorDefinition(array $configuration, ContainerBuilder $container): void
+    {
+        $entity = $configuration['sylius'];
+        $definitionId = $this->getDefinitionValidatorId($entity);
+
+        $arguments = [
+            new Reference('validator'),
+            new Reference(ViolationBagInterface::class),
+        ];
+
+        $definition = new Definition(ResourceValidator::class, $arguments);
+        $definition->setPublic(false);
 
         $container->setDefinition($definitionId, $definition);
     }
@@ -274,6 +295,11 @@ final class PrestashopMigrationExtension extends Extension
     private function getDefinitionProviderId(string $resource): string
     {
         return $this->getDefinitionId('provider', $resource);
+    }
+
+    private function getDefinitionValidatorId(string $resource): string
+    {
+        return $this->getDefinitionId('validator', $resource);
     }
 
     private function getDefinitionDataTransformerId(string $resource, string $type = null): string

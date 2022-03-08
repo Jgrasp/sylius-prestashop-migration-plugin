@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Jgrasp\PrestashopMigrationPlugin\Command;
 
 use Jgrasp\PrestashopMigrationPlugin\Importer\ImporterInterface;
+use Jgrasp\PrestashopMigrationPlugin\Validator\Violation;
 use Sylius\Component\Core\Formatter\StringInflector;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -34,7 +35,18 @@ class ResourceCommand extends Command
         $progressBar = new ProgressBar($output, $this->importer->size());
         $progressBar->setFormat('%percent:3s%% [%bar%] %elapsed:6s%/%estimated:-6s%');
 
-        $this->importer->import(function (int $step) use ($progressBar) {
+        $this->importer->import(function (int $step, array $violations) use ($progressBar, $io) {
+
+            array_walk_recursive($violations,
+                function (Violation $violation) use ($io) {
+                    $io->warning([
+                        sprintf('%s %s not import', $this->name, $violation->getEntityId()),
+                        sprintf('Reason : %s', $violation->getMessage())
+                    ]);
+                }
+            );
+
+
             $progressBar->advance($step);
         });
 

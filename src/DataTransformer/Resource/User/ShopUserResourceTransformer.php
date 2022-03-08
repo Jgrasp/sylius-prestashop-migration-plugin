@@ -6,7 +6,8 @@ namespace Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\User;
 use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\ResourceTransformerInterface;
 use Jgrasp\PrestashopMigrationPlugin\Model\Customer\CustomerModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
-use Sylius\Component\Core\Model\CustomerInterface;
+
+use Sylius\Component\Customer\Model\CustomerInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 
@@ -27,7 +28,7 @@ class ShopUserResourceTransformer implements ResourceTransformerInterface
      *
      * @return ResourceInterface
      */
-    public function transform(ModelInterface $model): ?ResourceInterface
+    public function transform(ModelInterface $model): ResourceInterface
     {
         /**
          * @var CustomerInterface $customer
@@ -42,16 +43,11 @@ class ShopUserResourceTransformer implements ResourceTransformerInterface
         $shopUser->setUsername($customer->getEmail());
         $shopUser->setEnabled($model->enabled);
 
-        switch ($model->gender) {
-            case 1:
-                $gender = \Sylius\Component\Customer\Model\CustomerInterface::MALE_GENDER;
-                break;
-            case 2:
-                $gender = \Sylius\Component\Customer\Model\CustomerInterface::FEMALE_GENDER;
-                break;
-            default:
-                $gender = \Sylius\Component\Customer\Model\CustomerInterface::UNKNOWN_GENDER;
-        }
+        $gender = match ($model->gender) {
+            1 => CustomerInterface::MALE_GENDER,
+            2 => CustomerInterface::FEMALE_GENDER,
+            default => CustomerInterface::UNKNOWN_GENDER,
+        };
 
 
         $customer->setGender($gender);

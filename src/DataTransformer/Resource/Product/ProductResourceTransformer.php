@@ -84,7 +84,7 @@ class ProductResourceTransformer implements ResourceTransformerInterface
      * @return ResourceInterface
      * @throws \Exception
      */
-    public function transform(ModelInterface $model): ?ResourceInterface
+    public function transform(ModelInterface $model): ResourceInterface
     {
         /**
          * @var ProductInterface $product

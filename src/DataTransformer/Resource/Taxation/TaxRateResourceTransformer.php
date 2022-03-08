@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Taxation;
 
+use Behat\Transliterator\Transliterator;
 use Doctrine\ORM\EntityManagerInterface;
 use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\ResourceTransformerInterface;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
@@ -52,40 +53,26 @@ class TaxRateResourceTransformer implements ResourceTransformerInterface
     /**
      * @param TaxModel $model
      *
-     * @return ResourceInterface|null
+     * @return ResourceInterface
      */
-    public function transform(ModelInterface $model): ?ResourceInterface
+    public function transform(ModelInterface $model): ResourceInterface
     {
         /** @var TaxRateInterface $resource */
         $resource = $this->transformer->transform($model);
 
         $resource->setName($model->getName($this->localeContext->getLocaleCode()));
         $resource->setAmount($resource->getAmount() / 100);
-        $resource->setCode(StringInflector::nameToLowercaseCode($resource->getName()));
+        $resource->setCode(StringInflector::nameToLowercaseCode(Transliterator::transliterate($resource->getName())));
         $resource->setCalculator('default');
 
-        if (null === $resource->getName()) {
-            return null;
-        }
-
         $this->addZone($resource, $model);
-
-        if (null === $resource->getZone()) {
-            return null;
-        }
-
         $this->addTaxCategory($resource);
-
-        if (null === $resource->getCategory()) {
-            return null;
-        }
 
         return $resource;
     }
 
     private function addTaxCategory(TaxRateInterface $resource): void
     {
-
         /** @var TaxCategoryInterface $taxCategory */
         $taxCategory = $this->taxCategoryRepository->findOneBy(['code' => $resource->getCode()]);
 
@@ -97,8 +84,10 @@ class TaxRateResourceTransformer implements ResourceTransformerInterface
         $taxCategory->setCode($resource->getCode());
         $taxCategory->setName($resource->getName());
 
-        $this->entityManager->persist($taxCategory);
-        $this->entityManager->flush();
+        if($resource->getName()) {
+            $this->entityManager->persist($taxCategory);
+            $this->entityManager->flush();
+        }
 
         $resource->setCategory($taxCategory);
     }

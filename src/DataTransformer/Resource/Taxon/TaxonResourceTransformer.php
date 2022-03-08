@@ -38,7 +38,7 @@ final class TaxonResourceTransformer implements ResourceTransformerInterface
         $this->localeFetcher = $localeFetcher;
     }
 
-    public function transform(ModelInterface $model): ?ResourceInterface
+    public function transform(ModelInterface $model): ResourceInterface
     {
         /**
          * @var Taxon $taxon

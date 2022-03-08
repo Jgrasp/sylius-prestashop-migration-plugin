@@ -30,10 +30,10 @@ class ProductOptionValueResourceTransformer implements ResourceTransformerInterf
     /**
      * @param AttributeModel $model
      *
-     * @return ResourceInterface|null
+     * @return ResourceInterface
      * @throws \Exception
      */
-    public function transform(ModelInterface $model): ?ResourceInterface
+    public function transform(ModelInterface $model): ResourceInterface
     {
         /**
          * @var ProductOptionValueInterface $resource
@@ -41,11 +41,6 @@ class ProductOptionValueResourceTransformer implements ResourceTransformerInterf
         $resource = $this->transformer->transform($model);
 
         $productOption = $this->productOptionRepository->findOneBy(['prestashopId' => $model->attributeGroupId]);
-
-        if (null === $productOption) {
-            return null;
-        }
-
         $resource->setOption($productOption);
 
         foreach ($this->localeFetcher->getLocales() as $locale) {

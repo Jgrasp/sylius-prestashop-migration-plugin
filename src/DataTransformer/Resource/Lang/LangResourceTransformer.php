@@ -18,7 +18,7 @@ class LangResourceTransformer implements ResourceTransformerInterface
         $this->transformer = $transformer;
     }
 
-    public function transform(ModelInterface $model): ?ResourceInterface
+    public function transform(ModelInterface $model): ResourceInterface
     {
         /**
          * @var LocaleInterface $locale

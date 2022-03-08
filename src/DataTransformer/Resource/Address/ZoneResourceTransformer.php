@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Address;
 
+use Behat\Transliterator\Transliterator;
 use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\ResourceTransformerInterface;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Country\CountryRepository;
@@ -41,12 +42,12 @@ class ZoneResourceTransformer implements ResourceTransformerInterface
         $this->zoneMemberFactory = $zoneMemberFactory;
     }
 
-    public function transform(ModelInterface $model): ?ResourceInterface
+    public function transform(ModelInterface $model): ResourceInterface
     {
         /** @var ZoneInterface $resource */
         $resource = $this->transformer->transform($model);
 
-        $resource->setCode(StringInflector::nameToLowercaseCode($resource->getName().'_'.$resource->getPrestashopId()));
+        $resource->setCode(StringInflector::nameToLowercaseCode(Transliterator::transliterate($resource->getName().'_'.$resource->getPrestashopId())));
         $resource->setType(ZoneInterface::TYPE_COUNTRY);
         $resource->setScope(Scope::ALL);
 

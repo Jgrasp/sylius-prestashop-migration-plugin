@@ -6,6 +6,7 @@ namespace Jgrasp\PrestashopMigrationPlugin\DependencyInjection;
 use Jgrasp\PrestashopMigrationPlugin\Model\Address\AddressModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Attribute\AttributeGroupModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Attribute\AttributeModel;
+use Jgrasp\PrestashopMigrationPlugin\Model\Carrier\CarrierModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Category\CategoryModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Country\CountryModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Currency\CurrencyModel;
@@ -15,6 +16,7 @@ use Jgrasp\PrestashopMigrationPlugin\Model\Lang\LangModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Product\ProductAttributeModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Product\ProductModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Shop\ShopModel;
+use Jgrasp\PrestashopMigrationPlugin\Model\Tax\TaxCategoryModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Tax\TaxModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Zone\ZoneModel;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Address\AddressRepository;
@@ -190,6 +192,30 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('priority')->defaultValue(210)->end()
                         ->end()
                     ->end()
+                    ->arrayNode('shipping_method')
+                        ->addDefaultsIfNotSet()
+                        ->children()
+                            ->scalarNode('table')->defaultValue('carrier')->end()
+                            ->scalarNode('repository')->defaultValue(EntityRepository::class)->end()
+                            ->scalarNode('model')->defaultValue(CarrierModel::class)->end()
+                            ->scalarNode('primary_key')->defaultValue('id_carrier')->end()
+                            ->scalarNode('use_translation')->defaultValue(true)->end()
+                            ->scalarNode('sylius')->defaultValue('shipping_method')->end()
+                            ->scalarNode('priority')->defaultValue(240)->end()
+                        ->end()
+                    ->end()
+                    ->arrayNode('tax_category')
+                        ->addDefaultsIfNotSet()
+                        ->children()
+                            ->scalarNode('table')->defaultValue('tax')->end()
+                            ->scalarNode('repository')->defaultValue(EntityRepository::class)->end()
+                            ->scalarNode('model')->defaultValue(TaxCategoryModel::class)->end()
+                            ->scalarNode('primary_key')->defaultValue('id_tax')->end()
+                            ->scalarNode('use_translation')->defaultValue(true)->end()
+                            ->scalarNode('sylius')->defaultValue('tax_category')->end()
+                            ->scalarNode('priority')->defaultValue(255)->end()
+                        ->end()
+                    ->end()
                     ->arrayNode('tax_rate')
                         ->addDefaultsIfNotSet()
                         ->children()
@@ -199,7 +225,7 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('primary_key')->defaultValue('id_tax')->end()
                             ->scalarNode('use_translation')->defaultValue(true)->end()
                             ->scalarNode('sylius')->defaultValue('tax_rate')->end()
-                            ->scalarNode('priority')->defaultValue(255)->end()
+                            ->scalarNode('priority')->defaultValue(250)->end()
                         ->end()
                     ->end()
                     ->arrayNode('zone')

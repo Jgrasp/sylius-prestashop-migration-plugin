@@ -59,9 +59,9 @@ class ProductVariantResourceTransformer implements ResourceTransformerInterface
     /**
      * @param ProductAttributeModel $model
      *
-     * @return ResourceInterface|null
+     * @return ResourceInterface
      */
-    public function transform(ModelInterface $model): ?ResourceInterface
+    public function transform(ModelInterface $model): ResourceInterface
     {
         /** @var ProductVariantInterface $resource */
         $resource = $this->transformer->transform($model);
@@ -70,7 +70,7 @@ class ProductVariantResourceTransformer implements ResourceTransformerInterface
         $product = $this->productRepository->findOneBy(['prestashopId' => $model->productId]);
 
         if (null === $product) {
-            return null;
+            return $resource;
         }
 
         $code = $product->getCode().'_'.$resource->getPrestashopId();
@@ -88,7 +88,7 @@ class ProductVariantResourceTransformer implements ResourceTransformerInterface
             //Escape product variant transformation if an option value is not found
             //@Todo add log here
             if (null === $productOptionValue) {
-                return null;
+                return $resource;
             }
 
             $resource->addOptionValue($productOptionValue);

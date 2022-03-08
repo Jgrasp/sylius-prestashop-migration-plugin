@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Jgrasp\PrestashopMigrationPlugin\DataCollector\DataCollectorInterface;
 
 use Jgrasp\PrestashopMigrationPlugin\Persister\PersisterInterface;
+use Jgrasp\PrestashopMigrationPlugin\Validator\ViolationBagInterface;
 
 class ResourceImporter implements ImporterInterface
 {
@@ -20,12 +21,15 @@ class ResourceImporter implements ImporterInterface
 
     private EntityManagerInterface $entityManager;
 
+    private ViolationBagInterface $violationBag;
+
     public function __construct(
         string                 $name,
         int                    $step,
         DataCollectorInterface $collector,
         PersisterInterface     $persister,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        ViolationBagInterface $violationBag
     )
     {
         $this->name = $name;
@@ -33,6 +37,7 @@ class ResourceImporter implements ImporterInterface
         $this->collector = $collector;
         $this->persister = $persister;
         $this->entityManager = $entityManager;
+        $this->violationBag = $violationBag;
     }
 
     public function import(callable $callable = null): void
@@ -52,7 +57,7 @@ class ResourceImporter implements ImporterInterface
             $offset += $this->step;
 
             if (null !== $callable) {
-                $callable($this->step);
+                $callable($this->step, $this->violationBag->all());
             }
         }
     }

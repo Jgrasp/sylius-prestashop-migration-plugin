@@ -5,6 +5,7 @@ namespace Jgrasp\PrestashopMigrationPlugin\Persister;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Jgrasp\PrestashopMigrationPlugin\DataTransformer\TransformerInterface;
+use Jgrasp\PrestashopMigrationPlugin\Validator\ValidatorInterface;
 
 class ResourcePersister implements PersisterInterface
 {
@@ -12,17 +13,20 @@ class ResourcePersister implements PersisterInterface
 
     private TransformerInterface $transformer;
 
-    public function __construct(EntityManagerInterface $manager, TransformerInterface $transformer)
+    private ValidatorInterface $validator;
+
+    public function __construct(EntityManagerInterface $manager, TransformerInterface $transformer, ValidatorInterface $validator)
     {
         $this->manager = $manager;
         $this->transformer = $transformer;
+        $this->validator = $validator;
     }
 
     public function persist(array $data): void
     {
         $resource = $this->transformer->transform($data);
 
-        if (null !== $resource) {
+        if ($this->validator->validate($resource)) {
             $this->manager->persist($resource);
         }
     }

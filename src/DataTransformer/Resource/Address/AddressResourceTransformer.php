@@ -36,14 +36,9 @@ class AddressResourceTransformer implements ResourceTransformerInterface
      *
      * @return ResourceInterface
      */
-    public function transform(ModelInterface $model): ?ResourceInterface
+    public function transform(ModelInterface $model): ResourceInterface
     {
         $customer = $this->customerRepository->findOneBy(['prestashopId' => $model->customerId]);
-
-        if (null === $customer) {
-            return null;
-        }
-
         /**
          * @var AddressInterface $address
          */
@@ -52,10 +47,6 @@ class AddressResourceTransformer implements ResourceTransformerInterface
          * @var Country|null $country
          */
         $country = $this->countryRepository->findOneBy(['prestashopId' => $model->countryId]);
-
-        if (null === $country) {
-            return null;
-        }
 
         if (null !== $model->address2) {
             $address->setStreet($address->getStreet().', '.$model->address2);

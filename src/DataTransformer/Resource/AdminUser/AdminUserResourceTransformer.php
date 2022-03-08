@@ -30,10 +30,10 @@ class AdminUserResourceTransformer implements ResourceTransformerInterface
     /**
      * @param EmployeeModel $model
      *
-     * @return ResourceInterface|null
+     * @return ResourceInterface
      * @throws Exception
      */
-    public function transform(ModelInterface $model): ?ResourceInterface
+    public function transform(ModelInterface $model): ResourceInterface
     {
         /**
          * @var AdminUserInterface $adminUser
@@ -44,11 +44,6 @@ class AdminUserResourceTransformer implements ResourceTransformerInterface
         $this->passwordUpdater->updatePassword($adminUser);
 
         $locale = $this->localeRepository->findOneBy(['prestashopId' => $model->langId]);
-
-        if (is_null($locale)) {
-            throw new Exception(sprintf("A locale is missing from Prestashop with Id %s. Please import locales before import administrator accounts.", $model->langId));
-        }
-
         $adminUser->setLocaleCode($locale->getCode());
 
         return $adminUser;

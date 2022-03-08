@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Channel;
 
+use Exception;
 use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\ResourceTransformerInterface;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
 use Jgrasp\PrestashopMigrationPlugin\Model\Shop\ShopModel;
@@ -39,9 +40,9 @@ class ChannelResourceTransformer implements ResourceTransformerInterface
      * @param ShopModel $model
      *
      * @return ResourceInterface
-     * @throws \Exception
+     * @throws Exception
      */
-    public function transform(ModelInterface $model): ?ResourceInterface
+    public function transform(ModelInterface $model): ResourceInterface
     {
         /**
          * @var ChannelInterface $channel
@@ -55,30 +56,24 @@ class ChannelResourceTransformer implements ResourceTransformerInterface
 
         if (null === $locale) {
             $locales = $this->localeRepository->findAll();
-
-            if (empty($locales)) {
-                throw new \Exception("Locales are missing. Please migrate locales before migrate channels");
-            }
-
             $locale = reset($locales);
+
+            if ($locale === false) {
+                $locale = null;
+            }
         }
 
         $channel->addLocale($locale);
         $channel->setDefaultLocale($locale);
 
-        if (empty($model->currencies)) {
-            throw new \Exception("Prestashop project has no currencies. Please add currency in Prestashop.");
-        }
-
         $currencyPrestashop = reset($model->currencies);
-        $currency = $this->currencyRepository->findOneBy(['prestashopId' => $currencyPrestashop]);
 
-        if (null === $currency) {
-            throw new \Exception(sprintf("Prestashop currency %s not found in Sylius. Please verify currency import.", $currencyPrestashop));
+        if ($currencyPrestashop) {
+            $currency = $this->currencyRepository->findOneBy(['prestashopId' => $currencyPrestashop]);
+
+            $channel->setBaseCurrency($currency);
+            $channel->addCurrency($currency);
         }
-
-        $channel->setBaseCurrency($currency);
-        $channel->addCurrency($currency);
 
         return $channel;
     }

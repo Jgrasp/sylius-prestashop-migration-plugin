@@ -7,5 +7,5 @@ use Sylius\Component\Resource\Model\ResourceInterface;
 
 interface TransformerInterface
 {
-    public function transform(array $data): ?ResourceInterface;
+    public function transform(array $data): ResourceInterface;
 }
