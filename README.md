@@ -97,6 +97,7 @@ in entities :
 
 - ```App\Entity\Addressing\Address```
 - ```App\Entity\Addressing\Country```
+- ```App\Entity\Addressing\Zone```
 - ```App\Entity\Channel\Channel```
 - ```App\Entity\Currency\Currency```
 - ```App\Entity\Customer\Customer```

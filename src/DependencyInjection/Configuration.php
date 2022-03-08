@@ -15,6 +15,7 @@ use Jgrasp\PrestashopMigrationPlugin\Model\Lang\LangModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Product\ProductAttributeModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Product\ProductModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Shop\ShopModel;
+use Jgrasp\PrestashopMigrationPlugin\Model\Zone\ZoneModel;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Address\AddressRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Currency\CurrencyRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Customer\CustomerRepository;
@@ -185,6 +186,18 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('use_translation')->defaultValue(true)->end()
                             ->scalarNode('sylius')->defaultValue('taxon')->end()
                             ->scalarNode('priority')->defaultValue(210)->end()
+                        ->end()
+                    ->end()
+                    ->arrayNode('zone')
+                        ->addDefaultsIfNotSet()
+                        ->children()
+                            ->scalarNode('table')->defaultValue('zone')->end()
+                            ->scalarNode('repository')->defaultValue(EntityRepository::class)->end()
+                            ->scalarNode('model')->defaultValue(ZoneModel::class)->end()
+                            ->scalarNode('primary_key')->defaultValue('id_zone')->end()
+                            ->scalarNode('use_translation')->defaultValue(false)->end()
+                            ->scalarNode('sylius')->defaultValue('zone')->end()
+                            ->scalarNode('priority')->defaultValue(255)->end()
                         ->end()
                     ->end()
                 ->end()
