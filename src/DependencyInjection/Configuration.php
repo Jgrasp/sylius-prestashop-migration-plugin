@@ -225,7 +225,7 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('primary_key')->defaultValue('id_tax')->end()
                             ->scalarNode('use_translation')->defaultValue(true)->end()
                             ->scalarNode('sylius')->defaultValue('tax_rate')->end()
-                            ->scalarNode('priority')->defaultValue(250)->end()
+                            ->scalarNode('priority')->defaultValue(245)->end()
                         ->end()
                     ->end()
                     ->arrayNode('zone')
