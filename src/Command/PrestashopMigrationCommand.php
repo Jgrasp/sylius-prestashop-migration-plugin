@@ -62,7 +62,7 @@ final class PrestashopMigrationCommand extends Command
         }
 
         $postConfiguration = $this->getApplication()->find('prestashop:post_configuration');
-        $postConfiguration->run(new ArrayInput([]), $output);
+        $postConfiguration->run(new ArrayInput(['--no-interaction' => true]), $output);
 
         return Command::SUCCESS;
     }

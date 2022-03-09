@@ -7,6 +7,7 @@ use Jgrasp\PrestashopMigrationPlugin\Configurator\ConfiguratorInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 class ConfigurationCommand extends Command
@@ -24,6 +25,17 @@ class ConfigurationCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
+
+        if ($input->getOption('no-interaction') === false) {
+            $helper = $this->getHelper('question');
+            $question = new ConfirmationQuestion('Are you sure you want to automatically configure the store ? This can have serious repercussions on a production site. (N/y) ', false);
+
+            if (!$helper->ask($input, $output, $question)) {
+                $output->write('<error>Configuration abort !</error>');
+
+                return Command::FAILURE;
+            }
+        }
 
         foreach ($this->configurators as $configurator) {
 
