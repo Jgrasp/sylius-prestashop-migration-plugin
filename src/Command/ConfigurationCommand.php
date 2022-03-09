@@ -31,7 +31,6 @@ class ConfigurationCommand extends Command
 
             $configurator->execute();
 
-            $io->newLine(2);
             $io->success('Configuration successfull');
             $io->writeln('---------------------------------------------------------------------------');
         }

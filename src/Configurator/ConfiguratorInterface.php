@@ -9,5 +9,5 @@ interface ConfiguratorInterface
 
     public function getName(): string;
 
-    public function getDefaultPriority(): int;
+    public static function getDefaultPriority(): int;
 }
