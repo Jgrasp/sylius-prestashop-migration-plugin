@@ -5,6 +5,7 @@ namespace Jgrasp\PrestashopMigrationPlugin\DependencyInjection;
 
 use Jgrasp\PrestashopMigrationPlugin\Attribute\PropertyAttributeAccessor;
 use Jgrasp\PrestashopMigrationPlugin\Command\ResourceCommand;
+use Jgrasp\PrestashopMigrationPlugin\Configurator\ConfiguratorInterface;
 use Jgrasp\PrestashopMigrationPlugin\DataCollector\EntityCollector;
 use Jgrasp\PrestashopMigrationPlugin\DataCollector\EntityTranslatableCollector;
 use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Model\ModelTransformer;
@@ -32,6 +33,8 @@ final class PrestashopMigrationExtension extends Extension
 {
     public function load(array $configs, ContainerBuilder $container)
     {
+        $container->registerForAutoconfiguration(ConfiguratorInterface::class)->addTag('prestashop.configurator');
+
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
 
