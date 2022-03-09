@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Product;
 
+use Behat\Transliterator\Transliterator;
 use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\ResourceTransformerInterface;
 use Jgrasp\PrestashopMigrationPlugin\Model\LocaleFetcher;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
@@ -137,7 +138,7 @@ class ProductResourceTransformer implements ResourceTransformerInterface
             $product->setCode($product->getCode().'-'.$model->id);
         }
 
-        $product->setCode(StringInflector::nameToCode($product->getCode()));
+        $product->setCode(StringInflector::nameToLowercaseCode(Transliterator::transliterate($product->getCode())));
     }
 
     private function addTaxons(ProductInterface $product, ProductModel $model): void

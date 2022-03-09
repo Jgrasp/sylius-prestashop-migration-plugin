@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Taxon;
 
 use App\Entity\Taxonomy\Taxon;
+use Behat\Transliterator\Transliterator;
 use Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\ResourceTransformerInterface;
 use Jgrasp\PrestashopMigrationPlugin\Model\Category\CategoryModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\LocaleFetcher;
@@ -56,7 +57,7 @@ final class TaxonResourceTransformer implements ResourceTransformerInterface
 
             //Set the name with code because prestashop can have multiple categories with same name. Can break the slug taxon in Sylius which is unique.
             if (null === $taxon->getId() && null === $taxon->getCode()) {
-                $taxon->setCode(StringInflector::nameToLowercaseCode(sprintf('%s %s', $taxon->getName(), $model->id)));
+                $taxon->setCode(StringInflector::nameToLowercaseCode(Transliterator::transliterate(sprintf('%s %s', $taxon->getName(), $model->id))));
             }
 
             $taxon->setName($taxon->getCode());
