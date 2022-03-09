@@ -20,6 +20,7 @@ use Jgrasp\PrestashopMigrationPlugin\Model\Tax\TaxCategoryModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Tax\TaxModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Zone\ZoneModel;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Address\AddressRepository;
+use Jgrasp\PrestashopMigrationPlugin\Repository\Carrier\CarrierRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Country\CountryRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Currency\CurrencyRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Customer\CustomerRepository;
@@ -192,18 +193,18 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('priority')->defaultValue(210)->end()
                         ->end()
                     ->end()
-                    ->arrayNode('shipping_method')
+                   /* ->arrayNode('shipping_method')
                         ->addDefaultsIfNotSet()
                         ->children()
                             ->scalarNode('table')->defaultValue('carrier')->end()
-                            ->scalarNode('repository')->defaultValue(EntityRepository::class)->end()
+                            ->scalarNode('repository')->defaultValue(CarrierRepository::class)->end()
                             ->scalarNode('model')->defaultValue(CarrierModel::class)->end()
                             ->scalarNode('primary_key')->defaultValue('id_carrier')->end()
                             ->scalarNode('use_translation')->defaultValue(true)->end()
                             ->scalarNode('sylius')->defaultValue('shipping_method')->end()
                             ->scalarNode('priority')->defaultValue(240)->end()
                         ->end()
-                    ->end()
+                    ->end()*/
                     ->arrayNode('tax_category')
                         ->addDefaultsIfNotSet()
                         ->children()

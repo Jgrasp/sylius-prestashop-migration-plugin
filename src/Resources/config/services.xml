@@ -12,7 +12,8 @@
             <argument type="service" id="sylius.context.locale"/>
             <argument type="service" id="translator"/>
         </service>
-        <service id="Jgrasp\PrestashopMigrationPlugin\Validator\ViolationBagInterface" alias="Jgrasp\PrestashopMigrationPlugin\Validator\ViolationBag"/>
+        <service id="Jgrasp\PrestashopMigrationPlugin\Validator\ViolationBagInterface"
+                 alias="Jgrasp\PrestashopMigrationPlugin\Validator\ViolationBag"/>
 
         <service id="Jgrasp\PrestashopMigrationPlugin\Downloader\ImageDownloader">
             <argument>%prestashop.public_directory%</argument>
@@ -143,12 +144,16 @@
             <argument type="service" id="Jgrasp\PrestashopMigrationPlugin\Model\LocaleFetcher"/>
         </service>
 
-        <service
+      <!--  <service
                 id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Shipping\ShippingMethodResourceTransformer"
                 decorates="prestashop.data_transformer.resource.shipping_method">
             <argument type="service" id=".inner"/>
+            <argument type="service" id="sylius.repository.shipping_method"/>
+            <argument type="service" id="sylius.repository.channel"/>
+            <argument type="service" id="sylius.repository.zone"/>
+            <argument type="service" id="prestashop.repository.carrier"/>
             <argument type="service" id="Jgrasp\PrestashopMigrationPlugin\Model\LocaleFetcher"/>
-        </service>
+        </service>-->
 
         <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\User\ShopUserResourceTransformer"
                  decorates="prestashop.data_transformer.resource.customer">
@@ -209,6 +214,12 @@
                  decorates="prestashop.validator.country">
             <argument type="service" id=".inner"/>
         </service>
+
+       <!-- <service id="Jgrasp\PrestashopMigrationPlugin\Validator\Shipping\ShippingMethodValidator"
+                 decorates="prestashop.validator.shipping_method">
+            <argument type="service" id=".inner"/>
+            <argument type="service" id="prestashop.repository.carrier"/>
+        </service>-->
 
         <service id="Jgrasp\PrestashopMigrationPlugin\Validator\Taxation\TaxRateValidator"
                  decorates="prestashop.validator.tax_rate">
