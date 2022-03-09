@@ -5,9 +5,9 @@ namespace Jgrasp\PrestashopMigrationPlugin\Model\Product;
 
 use Jgrasp\PrestashopMigrationPlugin\Attribute\Field;
 use Jgrasp\PrestashopMigrationPlugin\Model\ModelInterface;
+use Jgrasp\PrestashopMigrationPlugin\Model\ToggleableTrait;
 use Jgrasp\PrestashopMigrationPlugin\Model\TranslationModelTrait;
 use Jgrasp\PrestashopMigrationPlugin\Model\UrlModelTrait;
-use Sylius\Component\Resource\Model\ToggleableTrait;
 
 class ProductModel implements ModelInterface
 {
