@@ -61,6 +61,9 @@ final class PrestashopMigrationCommand extends Command
             $command->run(new ArrayInput([]), $output);
         }
 
+        $postConfiguration = $this->getApplication()->find('prestashop:post_configuration');
+        $postConfiguration->run(new ArrayInput([]), $output);
+
         return Command::SUCCESS;
     }
 }

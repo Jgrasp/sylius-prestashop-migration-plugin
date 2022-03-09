@@ -6,6 +6,10 @@
 
     <services>
 
+        <instanceof id="Jgrasp\PrestashopMigrationPlugin\Configurator\ConfiguratorInterface">
+            <tag name="prestashop.configurator"/>
+        </instanceof>
+
         <service id="Jgrasp\PrestashopMigrationPlugin\Attribute\PropertyAttributeAccessor"/>
 
         <service id="Jgrasp\PrestashopMigrationPlugin\Validator\ViolationBag">
@@ -40,6 +44,11 @@
             <argument type="service" id="sylius.image_uploader"/>
             <tag name="console.command" command="prestashop:migration:product:images"/>
             <tag name="prestashop.command.migration" priority="-255"/>
+        </service>
+
+        <service id="Jgrasp\PrestashopMigrationPlugin\Command\ConfigurationCommand">
+            <argument type="tagged_iterator" tag="prestashop.configurator"/>
+            <tag name="console.command" command="prestashop:post_configuration"/>
         </service>
 
         <!-- COLLECTOR -->
