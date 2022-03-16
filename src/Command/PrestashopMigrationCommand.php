@@ -7,8 +7,6 @@ use Doctrine\Migrations\DependencyFactory;
 use Doctrine\Migrations\Metadata\Storage\MetadataStorage;
 use Doctrine\Migrations\Version\Direction;
 use Doctrine\Migrations\Version\ExecutionResult;
-use Doctrine\Migrations\Version\Version;
-use Sylius\Bundle\CoreBundle\Migrations\Version20211018130725;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,8 +20,6 @@ final class PrestashopMigrationCommand extends Command
      * @var ResourceCommand[] $commands
      */
     private array $commands;
-
-    private MetadataStorage $metadataStorage;
 
     private DependencyFactory $dependencyFactory;
 
