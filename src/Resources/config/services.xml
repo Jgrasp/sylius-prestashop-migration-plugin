@@ -28,6 +28,7 @@
         <!-- COMMAND -->
         <service id="Jgrasp\PrestashopMigrationPlugin\Command\PrestashopMigrationCommand">
             <argument type="tagged_iterator" tag="prestashop.command.migration"/>
+            <argument type="service" id="doctrine.migrations.dependency_factory"/>
             <tag name="console.command" command="prestashop:migration:all"/>
         </service>
 

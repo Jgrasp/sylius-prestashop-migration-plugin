@@ -3,10 +3,13 @@ declare(strict_types=1);
 
 namespace Jgrasp\PrestashopMigrationPlugin\Command;
 
-use Jgrasp\PrestashopMigrationPlugin\Importer\ResourceImporterCollection;
-use Jgrasp\PrestashopMigrationPlugin\Importer\ImporterInterface;
+use Doctrine\Migrations\DependencyFactory;
+use Doctrine\Migrations\Metadata\Storage\MetadataStorage;
+use Doctrine\Migrations\Version\Direction;
+use Doctrine\Migrations\Version\ExecutionResult;
+use Doctrine\Migrations\Version\Version;
+use Sylius\Bundle\CoreBundle\Migrations\Version20211018130725;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -20,11 +23,17 @@ final class PrestashopMigrationCommand extends Command
      */
     private array $commands;
 
-    public function __construct(iterable $commands)
+    private MetadataStorage $metadataStorage;
+
+    private DependencyFactory $dependencyFactory;
+
+    public function __construct(iterable $commands, DependencyFactory $dependencyFactory)
     {
         $this->commands = $commands instanceof \Traversable ? iterator_to_array($commands) : $commands;
 
         parent::__construct();
+
+        $this->dependencyFactory = $dependencyFactory;
     }
 
     public function configure()
@@ -53,8 +62,15 @@ final class PrestashopMigrationCommand extends Command
             $create = $this->getApplication()->find('doctrine:database:create');
             $create->run(new ArrayInput([]), $output);
 
-            $schema = $this->getApplication()->find('doctrine:schema:create');
-            $schema->run(new ArrayInput([]), $output);
+            $create = $this->getApplication()->find('doctrine:schema:update');
+            $create->run(new ArrayInput(['--force' => true]), $output);
+
+            $metadataStorage = $this->dependencyFactory->getMetadataStorage();
+            $metadataStorage->ensureInitialized();
+
+            foreach ($this->dependencyFactory->getMigrationPlanCalculator()->getMigrations()->getItems() as $migration) {
+                $metadataStorage->complete(new ExecutionResult($migration->getVersion(), Direction::UP, new \DateTimeImmutable()));
+            }
         }
 
         foreach ($this->commands as $command) {
