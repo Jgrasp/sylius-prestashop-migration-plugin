@@ -6,7 +6,6 @@ namespace Jgrasp\PrestashopMigrationPlugin\DependencyInjection;
 use Jgrasp\PrestashopMigrationPlugin\Model\Address\AddressModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Attribute\AttributeGroupModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Attribute\AttributeModel;
-use Jgrasp\PrestashopMigrationPlugin\Model\Carrier\CarrierModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Category\CategoryModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Country\CountryModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Currency\CurrencyModel;
@@ -20,7 +19,7 @@ use Jgrasp\PrestashopMigrationPlugin\Model\Tax\TaxCategoryModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Tax\TaxModel;
 use Jgrasp\PrestashopMigrationPlugin\Model\Zone\ZoneModel;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Address\AddressRepository;
-use Jgrasp\PrestashopMigrationPlugin\Repository\Carrier\CarrierRepository;
+use Jgrasp\PrestashopMigrationPlugin\Repository\Category\CategoryRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Country\CountryRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Currency\CurrencyRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Customer\CustomerRepository;
@@ -185,7 +184,7 @@ class Configuration implements ConfigurationInterface
                         ->addDefaultsIfNotSet()
                         ->children()
                             ->scalarNode('table')->defaultValue('category')->end()
-                            ->scalarNode('repository')->defaultValue(EntityRepository::class)->end()
+                            ->scalarNode('repository')->defaultValue(CategoryRepository::class)->end()
                             ->scalarNode('model')->defaultValue(CategoryModel::class)->end()
                             ->scalarNode('primary_key')->defaultValue('id_category')->end()
                             ->scalarNode('use_translation')->defaultValue(true)->end()
