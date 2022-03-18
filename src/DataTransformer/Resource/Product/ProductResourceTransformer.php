@@ -165,7 +165,7 @@ class ProductResourceTransformer implements ResourceTransformerInterface
             $productTaxon->setTaxon($taxon);
             $productTaxon->setPosition((int)$category['position']);
 
-            if ($product->hasProductTaxon($productTaxon)) {
+            if (!$product->hasProductTaxon($productTaxon)) {
                 $product->addProductTaxon($productTaxon);
             }
 
