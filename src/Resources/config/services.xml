@@ -250,6 +250,11 @@
              <argument type="service" id="prestashop.repository.carrier"/>
          </service>-->
 
+        <service id="Jgrasp\PrestashopMigrationPlugin\Validator\Product\ProductVariantValidator"
+                 decorates="prestashop.validator.product_variant">
+            <argument type="service" id=".inner"/>
+        </service>
+
         <service id="Jgrasp\PrestashopMigrationPlugin\Validator\Taxation\TaxRateValidator"
                  decorates="prestashop.validator.tax_rate">
             <argument type="service" id=".inner"/>
@@ -259,6 +264,7 @@
                  decorates="prestashop.validator.tax_category">
             <argument type="service" id=".inner"/>
         </service>
+
 
         <service id="Jgrasp\PrestashopMigrationPlugin\Validator\Taxon\TaxonValidator"
                  decorates="prestashop.validator.taxon">
