@@ -239,11 +239,6 @@
         </service>
         <!-- VALIDATOR -->
 
-        <service id="Jgrasp\PrestashopMigrationPlugin\Validator\Address\ZoneValidator"
-                 decorates="prestashop.validator.zone">
-            <argument type="service" id=".inner"/>
-        </service>
-
         <service id="Jgrasp\PrestashopMigrationPlugin\Validator\Country\CountryValidator"
                  decorates="prestashop.validator.country">
             <argument type="service" id=".inner"/>
@@ -265,6 +260,15 @@
             <argument type="service" id=".inner"/>
         </service>
 
+        <service id="Jgrasp\PrestashopMigrationPlugin\Validator\Taxon\TaxonValidator"
+                 decorates="prestashop.validator.taxon">
+            <argument type="service" id=".inner"/>
+        </service>
+
+        <service id="Jgrasp\PrestashopMigrationPlugin\Validator\Address\ZoneValidator"
+                 decorates="prestashop.validator.zone">
+            <argument type="service" id=".inner"/>
+        </service>
 
     </services>
 </container>
