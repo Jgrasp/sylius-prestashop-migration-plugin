@@ -10,6 +10,7 @@ use Jgrasp\PrestashopMigrationPlugin\Model\Product\ProductAttributeModel;
 use Jgrasp\PrestashopMigrationPlugin\Repository\EntityRepositoryInterface;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Product\ProductAttributeRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Product\ProductRepository;
+use Jgrasp\PrestashopMigrationPlugin\Repository\Stock\StockAvailableRepository;
 use Jgrasp\PrestashopMigrationPlugin\Resolver\ConfigurationResolver;
 use Sylius\Component\Channel\Model\ChannelsAwareInterface;
 use Sylius\Component\Core\Formatter\StringInflector;
@@ -34,6 +35,11 @@ class ProductVariantResourceTransformer implements ResourceTransformerInterface
     /** @var ProductAttributeRepository $productAttributeRepository */
     private EntityRepositoryInterface $productAttributeRepository;
 
+    /**
+     * @var StockAvailableRepository
+     */
+    private EntityRepositoryInterface $stockAvailableRepository;
+
     private FactoryInterface $channelPricingFactory;
 
     private LocaleFetcher $localeFetcher;
@@ -46,6 +52,7 @@ class ProductVariantResourceTransformer implements ResourceTransformerInterface
         RepositoryInterface          $productOptionValueRepository,
         EntityRepositoryInterface    $productEntityRepository,
         EntityRepositoryInterface    $productAttributeRepository,
+        EntityRepositoryInterface    $stockAvailableRepository,
         FactoryInterface             $channelPricingFactory,
         LocaleFetcher                $localeFetcher,
         ConfigurationResolver        $configurationResolver
@@ -56,6 +63,7 @@ class ProductVariantResourceTransformer implements ResourceTransformerInterface
         $this->productOptionValueRepository = $productOptionValueRepository;
         $this->productEntityRepository = $productEntityRepository;
         $this->productAttributeRepository = $productAttributeRepository;
+        $this->stockAvailableRepository = $stockAvailableRepository;
         $this->channelPricingFactory = $channelPricingFactory;
         $this->localeFetcher = $localeFetcher;
         $this->configurationResolver = $configurationResolver;
@@ -125,6 +133,7 @@ class ProductVariantResourceTransformer implements ResourceTransformerInterface
         }
 
         $resource->setTracked($this->configurationResolver->hasStockEnabled());
+        $resource->setOnHand($this->stockAvailableRepository->getQuantityByProductAttributeId($product->getPrestashopId(), $resource->getPrestashopId()));
 
         $resource->setProduct($product);
 

@@ -11,6 +11,7 @@ use Jgrasp\PrestashopMigrationPlugin\Model\Product\ProductModel;
 use Jgrasp\PrestashopMigrationPlugin\Repository\EntityRepositoryInterface;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Product\ProductAttributeRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Product\ProductRepository;
+use Jgrasp\PrestashopMigrationPlugin\Repository\Stock\StockAvailableRepository;
 use Jgrasp\PrestashopMigrationPlugin\Resolver\ConfigurationResolver;
 use Sylius\Component\Core\Formatter\StringInflector;
 use Sylius\Component\Core\Model\ChannelInterface;
@@ -37,6 +38,9 @@ class ProductResourceTransformer implements ResourceTransformerInterface
     /** @var ProductAttributeRepository $productAttributeRepository */
     private EntityRepositoryInterface $productAttributeRepository;
 
+    /** @var StockAvailableRepository $stockAvailableRepository */
+    private EntityRepositoryInterface $stockAvailableRepository;
+
     private RepositoryInterface $taxonRepository;
 
     private RepositoryInterface $channelRepository;
@@ -59,6 +63,7 @@ class ProductResourceTransformer implements ResourceTransformerInterface
         ResourceTransformerInterface    $transformer,
         EntityRepositoryInterface       $productRepository,
         EntityRepositoryInterface       $productAttributeRepository,
+        EntityRepositoryInterface       $stockAvailableRepository,
         RepositoryInterface             $taxonRepository,
         RepositoryInterface             $channelRepository,
         RepositoryInterface             $productOptionValueRepository,
@@ -73,6 +78,7 @@ class ProductResourceTransformer implements ResourceTransformerInterface
         $this->transformer = $transformer;
         $this->productRepository = $productRepository;
         $this->productAttributeRepository = $productAttributeRepository;
+        $this->stockAvailableRepository = $stockAvailableRepository;
         $this->taxonRepository = $taxonRepository;
         $this->channelRepository = $channelRepository;
         $this->productOptionValueRepository = $productOptionValueRepository;
@@ -187,7 +193,9 @@ class ProductResourceTransformer implements ResourceTransformerInterface
 
             $productVariant->setCode($product->getCode());
             $productVariant->setName($product->getName());
+
             $productVariant->setTracked($this->configurationResolver->hasStockEnabled());
+            $productVariant->setOnHand($this->stockAvailableRepository->getQuantityByProductId($product->getPrestashopId()));
         }
     }
 

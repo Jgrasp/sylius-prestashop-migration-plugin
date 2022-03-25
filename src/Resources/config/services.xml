@@ -119,6 +119,7 @@
             <argument type="service" id=".inner"/>
             <argument type="service" id="prestashop.repository.product"/>
             <argument type="service" id="prestashop.repository.product_attribute"/>
+            <argument type="service" id="prestashop.repository.stock_available"/>
             <argument type="service" id="sylius.repository.taxon"/>
             <argument type="service" id="sylius.repository.channel"/>
             <argument type="service" id="sylius.repository.product_option_value"/>
@@ -152,6 +153,7 @@
             <argument type="service" id="sylius.repository.product_option_value"/>
             <argument type="service" id="prestashop.repository.product"/>
             <argument type="service" id="prestashop.repository.product_attribute"/>
+            <argument type="service" id="prestashop.repository.stock_available"/>
             <argument type="service" id="sylius.factory.channel_pricing"/>
             <argument type="service" id="Jgrasp\PrestashopMigrationPlugin\Model\LocaleFetcher"/>
             <argument type="service" id="Jgrasp\PrestashopMigrationPlugin\Resolver\ConfigurationResolver"/>
@@ -206,16 +208,6 @@
         </service>
 
         <!-- REPOSITORY -->
-        <service id="prestashop.repository.image"
-                 alias="Jgrasp\PrestashopMigrationPlugin\Repository\Image\ImageRepository"/>
-
-        <service id="Jgrasp\PrestashopMigrationPlugin\Repository\Image\ImageRepository">
-            <argument>image</argument>
-            <argument>%prestashop.prefix%</argument>
-            <argument>id_image</argument>
-            <argument type="service" id="doctrine.dbal.prestashop_connection"/>
-        </service>
-
         <service id="prestashop.repository.configuration"
                  alias="Jgrasp\PrestashopMigrationPlugin\Repository\Configuration\ConfigurationRepository"/>
 
@@ -226,6 +218,25 @@
             <argument type="service" id="doctrine.dbal.prestashop_connection"/>
         </service>
 
+        <service id="prestashop.repository.image"
+                 alias="Jgrasp\PrestashopMigrationPlugin\Repository\Image\ImageRepository"/>
+
+        <service id="Jgrasp\PrestashopMigrationPlugin\Repository\Image\ImageRepository">
+            <argument>image</argument>
+            <argument>%prestashop.prefix%</argument>
+            <argument>id_image</argument>
+            <argument type="service" id="doctrine.dbal.prestashop_connection"/>
+        </service>
+
+        <service id="prestashop.repository.stock_available"
+                 alias="Jgrasp\PrestashopMigrationPlugin\Repository\Stock\StockAvailableRepository"/>
+
+        <service id="Jgrasp\PrestashopMigrationPlugin\Repository\Stock\StockAvailableRepository">
+            <argument>stock_available</argument>
+            <argument>%prestashop.prefix%</argument>
+            <argument>id_stock_available</argument>
+            <argument type="service" id="doctrine.dbal.prestashop_connection"/>
+        </service>
         <!-- VALIDATOR -->
 
         <service id="Jgrasp\PrestashopMigrationPlugin\Validator\Address\ZoneValidator"
