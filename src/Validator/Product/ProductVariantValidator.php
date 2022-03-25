@@ -24,6 +24,6 @@ class ProductVariantValidator implements ValidatorInterface
      */
     public function validate(ResourceInterface $resource): bool
     {
-        return $resource->hasProduct() !== null && $this->validator->validate($resource);
+        return $resource->hasProduct() && $this->validator->validate($resource);
     }
 }
