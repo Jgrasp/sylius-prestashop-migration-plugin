@@ -73,6 +73,11 @@
             <argument type="service" id="doctrine.orm.entity_manager"/>
         </service>
 
+        <!-- RESOLVER -->
+        <service id="Jgrasp\PrestashopMigrationPlugin\Resolver\ConfigurationResolver">
+            <argument type="service" id="prestashop.repository.configuration"/>
+        </service>
+
         <!-- RESOURCE TRANSFORMER -->
         <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\AdminUser\AdminUserResourceTransformer"
                  decorates="prestashop.data_transformer.resource.admin_user">
@@ -122,6 +127,7 @@
             <argument type="service" id="sylius.product_variant_resolver.default"/>
             <argument type="service" id="sylius.generator.slug"/>
             <argument type="service" id="Jgrasp\PrestashopMigrationPlugin\Model\LocaleFetcher"/>
+            <argument type="service" id="Jgrasp\PrestashopMigrationPlugin\Resolver\ConfigurationResolver"/>
         </service>
 
         <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Product\ProductOptionResourceTransformer"
@@ -148,18 +154,19 @@
             <argument type="service" id="prestashop.repository.product_attribute"/>
             <argument type="service" id="sylius.factory.channel_pricing"/>
             <argument type="service" id="Jgrasp\PrestashopMigrationPlugin\Model\LocaleFetcher"/>
+            <argument type="service" id="Jgrasp\PrestashopMigrationPlugin\Resolver\ConfigurationResolver"/>
         </service>
 
-      <!--  <service
-                id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Shipping\ShippingMethodResourceTransformer"
-                decorates="prestashop.data_transformer.resource.shipping_method">
-            <argument type="service" id=".inner"/>
-            <argument type="service" id="sylius.repository.shipping_method"/>
-            <argument type="service" id="sylius.repository.channel"/>
-            <argument type="service" id="sylius.repository.zone"/>
-            <argument type="service" id="prestashop.repository.carrier"/>
-            <argument type="service" id="Jgrasp\PrestashopMigrationPlugin\Model\LocaleFetcher"/>
-        </service>-->
+        <!--  <service
+                  id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\Shipping\ShippingMethodResourceTransformer"
+                  decorates="prestashop.data_transformer.resource.shipping_method">
+              <argument type="service" id=".inner"/>
+              <argument type="service" id="sylius.repository.shipping_method"/>
+              <argument type="service" id="sylius.repository.channel"/>
+              <argument type="service" id="sylius.repository.zone"/>
+              <argument type="service" id="prestashop.repository.carrier"/>
+              <argument type="service" id="Jgrasp\PrestashopMigrationPlugin\Model\LocaleFetcher"/>
+          </service>-->
 
         <service id="Jgrasp\PrestashopMigrationPlugin\DataTransformer\Resource\User\ShopUserResourceTransformer"
                  decorates="prestashop.data_transformer.resource.customer">
@@ -209,6 +216,16 @@
             <argument type="service" id="doctrine.dbal.prestashop_connection"/>
         </service>
 
+        <service id="prestashop.repository.configuration"
+                 alias="Jgrasp\PrestashopMigrationPlugin\Repository\Configuration\ConfigurationRepository"/>
+
+        <service id="Jgrasp\PrestashopMigrationPlugin\Repository\Configuration\ConfigurationRepository">
+            <argument>configuration</argument>
+            <argument>%prestashop.prefix%</argument>
+            <argument>id_configuration</argument>
+            <argument type="service" id="doctrine.dbal.prestashop_connection"/>
+        </service>
+
         <!-- VALIDATOR -->
 
         <service id="Jgrasp\PrestashopMigrationPlugin\Validator\Address\ZoneValidator"
@@ -221,11 +238,11 @@
             <argument type="service" id=".inner"/>
         </service>
 
-       <!-- <service id="Jgrasp\PrestashopMigrationPlugin\Validator\Shipping\ShippingMethodValidator"
-                 decorates="prestashop.validator.shipping_method">
-            <argument type="service" id=".inner"/>
-            <argument type="service" id="prestashop.repository.carrier"/>
-        </service>-->
+        <!-- <service id="Jgrasp\PrestashopMigrationPlugin\Validator\Shipping\ShippingMethodValidator"
+                  decorates="prestashop.validator.shipping_method">
+             <argument type="service" id=".inner"/>
+             <argument type="service" id="prestashop.repository.carrier"/>
+         </service>-->
 
         <service id="Jgrasp\PrestashopMigrationPlugin\Validator\Taxation\TaxRateValidator"
                  decorates="prestashop.validator.tax_rate">

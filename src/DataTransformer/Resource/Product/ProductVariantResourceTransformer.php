@@ -10,6 +10,7 @@ use Jgrasp\PrestashopMigrationPlugin\Model\Product\ProductAttributeModel;
 use Jgrasp\PrestashopMigrationPlugin\Repository\EntityRepositoryInterface;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Product\ProductAttributeRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Product\ProductRepository;
+use Jgrasp\PrestashopMigrationPlugin\Resolver\ConfigurationResolver;
 use Sylius\Component\Channel\Model\ChannelsAwareInterface;
 use Sylius\Component\Core\Formatter\StringInflector;
 use Sylius\Component\Core\Model\ChannelPricingInterface;
@@ -37,6 +38,8 @@ class ProductVariantResourceTransformer implements ResourceTransformerInterface
 
     private LocaleFetcher $localeFetcher;
 
+    private ConfigurationResolver $configurationResolver;
+
     public function __construct(
         ResourceTransformerInterface $transformer,
         RepositoryInterface          $productRepository,
@@ -44,7 +47,8 @@ class ProductVariantResourceTransformer implements ResourceTransformerInterface
         EntityRepositoryInterface    $productEntityRepository,
         EntityRepositoryInterface    $productAttributeRepository,
         FactoryInterface             $channelPricingFactory,
-        LocaleFetcher       $localeFetcher
+        LocaleFetcher                $localeFetcher,
+        ConfigurationResolver        $configurationResolver
     )
     {
         $this->transformer = $transformer;
@@ -54,6 +58,7 @@ class ProductVariantResourceTransformer implements ResourceTransformerInterface
         $this->productAttributeRepository = $productAttributeRepository;
         $this->channelPricingFactory = $channelPricingFactory;
         $this->localeFetcher = $localeFetcher;
+        $this->configurationResolver = $configurationResolver;
     }
 
     /**
@@ -105,7 +110,7 @@ class ProductVariantResourceTransformer implements ResourceTransformerInterface
             }
 
             $defaultPrice = $this->productEntityRepository->getPriceByShopId($product->getPrestashopId(), $channel->getPrestashopId());
-            $price = (int) (($defaultPrice + $model->price) * 100);
+            $price = (int)(($defaultPrice + $model->price) * 100);
 
 
             $channelPricing->setPrice($price);
@@ -119,6 +124,7 @@ class ProductVariantResourceTransformer implements ResourceTransformerInterface
             $resource->setName(null);
         }
 
+        $resource->setTracked($this->configurationResolver->hasStockEnabled());
 
         $resource->setProduct($product);
 

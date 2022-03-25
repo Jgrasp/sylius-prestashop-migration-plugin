@@ -11,6 +11,7 @@ use Jgrasp\PrestashopMigrationPlugin\Model\Product\ProductModel;
 use Jgrasp\PrestashopMigrationPlugin\Repository\EntityRepositoryInterface;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Product\ProductAttributeRepository;
 use Jgrasp\PrestashopMigrationPlugin\Repository\Product\ProductRepository;
+use Jgrasp\PrestashopMigrationPlugin\Resolver\ConfigurationResolver;
 use Sylius\Component\Core\Formatter\StringInflector;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ChannelPricingInterface;
@@ -52,6 +53,8 @@ class ProductResourceTransformer implements ResourceTransformerInterface
 
     private LocaleFetcher $localeFetcher;
 
+    private ConfigurationResolver $configurationResolver;
+
     public function __construct(
         ResourceTransformerInterface    $transformer,
         EntityRepositoryInterface       $productRepository,
@@ -64,6 +67,7 @@ class ProductResourceTransformer implements ResourceTransformerInterface
         ProductVariantResolverInterface $productVariantResolver,
         SlugGenerator                   $slugGenerator,
         LocaleFetcher                   $localeFetcher,
+        ConfigurationResolver           $configurationResolver,
     )
     {
         $this->transformer = $transformer;
@@ -77,6 +81,7 @@ class ProductResourceTransformer implements ResourceTransformerInterface
         $this->defaultVariantResolver = $productVariantResolver;
         $this->slugGenerator = $slugGenerator;
         $this->localeFetcher = $localeFetcher;
+        $this->configurationResolver = $configurationResolver;
     }
 
     /**
@@ -182,6 +187,7 @@ class ProductResourceTransformer implements ResourceTransformerInterface
 
             $productVariant->setCode($product->getCode());
             $productVariant->setName($product->getName());
+            $productVariant->setTracked($this->configurationResolver->hasStockEnabled());
         }
     }
 
