@@ -112,6 +112,17 @@ in entities :
 
 This trait is essential & add a link between Sylius & Prestashop entities.
 
+```App\Entity\Product\ProductVariant``` should implements ```Jgrasp\PrestashopMigrationPlugin\Entity\Product\ProductVariantInterface```. So add the following code :
+
+```php
+
+use Jgrasp\PrestashopMigrationPlugin\Entity\Product\ProductVariantInterface;
+
+class ProductVariant extends BaseProductVariant implements ProductVariantInterface{
+
+}
+```
+
 <br>
 
 7. Upgrade your database

@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace Jgrasp\PrestashopMigrationPlugin\Validator\Product;
 
+use Jgrasp\PrestashopMigrationPlugin\Entity\Product\ProductVariantInterface;
 use Jgrasp\PrestashopMigrationPlugin\Validator\ValidatorInterface;
-use Sylius\Component\Core\Model\ProductVariantInterface;
+
 use Sylius\Component\Resource\Model\ResourceInterface;
 
 class ProductVariantValidator implements ValidatorInterface
@@ -23,6 +24,6 @@ class ProductVariantValidator implements ValidatorInterface
      */
     public function validate(ResourceInterface $resource): bool
     {
-        return $resource->getProduct() !== null && $this->validator->validate($resource);
+        return $resource->hasProduct() !== null && $this->validator->validate($resource);
     }
 }
