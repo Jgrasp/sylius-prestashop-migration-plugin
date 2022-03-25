@@ -158,7 +158,7 @@ class ProductResourceTransformer implements ResourceTransformerInterface
              */
             $taxon = $this->taxonRepository->findOneBy(['prestashopId' => $categoryId]);
 
-            if (null === $taxon) {
+            if (null === $taxon || $product->hasTaxon($taxon)) {
                 continue;
             }
 
